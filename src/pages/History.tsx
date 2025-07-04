@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SurveyCard, { Survey } from '@/components/SurveyCard';
+import ViewResponse from '@/components/ViewResponse';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Calendar } from '@/components/ui/calendar';
@@ -23,6 +24,7 @@ interface FilterOptions {
 
 const History: React.FC = () => {
   const navigate = useNavigate();
+  const [viewingResponse, setViewingResponse] = useState<{ surveyId: string; surveyName: string } | null>(null);
 
   // Mock history data with education-focused surveys
   const [allHistoryItems] = useState<Survey[]>([
@@ -53,7 +55,7 @@ const History: React.FC = () => {
       type: 'In School',
       access: 'Public',
       languages: ['English'],
-      status: 'sync-error',
+      status: 'pending',
       lastModified: '2 Jul 2025, 11:30 AM'
     },
     {
@@ -73,7 +75,7 @@ const History: React.FC = () => {
       type: 'In School',
       access: 'Private',
       languages: ['Hindi'],
-      status: 'completed',
+      status: 'synced',
       lastModified: '30 Jun 2025, 9:15 AM'
     }
   ]);
@@ -86,94 +88,15 @@ const History: React.FC = () => {
 
   const [filteredItems, setFilteredItems] = useState<Survey[]>(allHistoryItems);
 
-  // Dummy response data generator
-  const generateDummyResponse = (surveyId: string, surveyName: string) => {
-    const dummyData = {
-      surveyId,
-      surveyName,
-      completedAt: new Date().toISOString(),
-      responses: [
-        {
-          questionId: 'q1',
-          question: 'School Name',
-          type: 'text',
-          answer: 'Government Primary School, Village Rampur'
-        },
-        {
-          questionId: 'q2',
-          question: 'UDISE Code',
-          type: 'text',
-          answer: '12345678901'
-        },
-        {
-          questionId: 'q3',
-          question: 'Number of Students',
-          type: 'number',
-          answer: '245'
-        },
-        {
-          questionId: 'q4',
-          question: 'School Infrastructure Rating',
-          type: 'multiple_choice_single',
-          answer: 'Good',
-          options: ['Excellent', 'Good', 'Average', 'Poor']
-        },
-        {
-          questionId: 'q5',
-          question: 'Available Facilities',
-          type: 'multiple_choice_multi',
-          answer: ['Library', 'Computer Lab', 'Playground'],
-          options: ['Library', 'Computer Lab', 'Science Lab', 'Playground', 'Kitchen', 'Medical Room']
-        },
-        {
-          questionId: 'q6',
-          question: 'Last Inspection Date',
-          type: 'date',
-          answer: '2025-06-15'
-        },
-        {
-          questionId: 'q7',
-          question: 'Overall Satisfaction',
-          type: 'likert',
-          answer: '4',
-          scale: '1-5 (Very Dissatisfied to Very Satisfied)'
-        }
-      ],
-      location: {
-        latitude: 26.9124,
-        longitude: 75.7873,
-        address: 'Village Rampur, Rajasthan'
-      },
-      syncStatus: 'synced',
-      submittedBy: 'Surveyor ID: ABC123'
-    };
-
-    return dummyData;
-  };
-
   const handleViewResponse = (surveyId: string) => {
     const survey = allHistoryItems.find(s => s.id === surveyId);
     if (survey) {
-      const dummyResponse = generateDummyResponse(surveyId, survey.name);
-      
-      // Store in localStorage for persistence
-      localStorage.setItem(`response_${surveyId}`, JSON.stringify(dummyResponse));
-      
-      // Show summary in toast
-      toast({
-        title: "Survey Response",
-        description: `Loaded response for ${survey.name}. Check console for full data.`,
-      });
-      
-      // Log detailed response data
-      console.log('=== SURVEY RESPONSE DETAILS ===');
-      console.log('Survey:', survey.name);
-      console.log('ID:', surveyId);
-      console.log('Completed:', dummyResponse.completedAt);
-      console.log('Responses:', dummyResponse.responses);
-      console.log('Location:', dummyResponse.location);
-      console.log('================================');
+      setViewingResponse({ surveyId, surveyName: survey.name });
     }
+  };
+
+  const handleBackFromResponse = () => {
+    setViewingResponse(null);
   };
 
   const applyFilters = () => {
@@ -257,7 +180,7 @@ const History: React.FC = () => {
     {
       title: 'Sync Status',
       key: 'status' as keyof Pick<FilterOptions, 'types' | 'status'>,
-      options: ['synced', 'pending', 'sync-error', 'completed']
+      options: ['synced', 'pending']
     }
   ];
 
@@ -269,6 +192,17 @@ const History: React.FC = () => {
         : [...prev[section], option]
     }));
   };
+
+  // If viewing a response, show the ViewResponse component
+  if (viewingResponse) {
+    return (
+      <ViewResponse
+        surveyId={viewingResponse.surveyId}
+        surveyName={viewingResponse.surveyName}
+        onBack={handleBackFromResponse}
+      />
+    );
+  }
 
   return (
     <div className="pb-20 pt-4 px-4 min-h-screen bg-background">
@@ -411,7 +345,7 @@ const History: React.FC = () => {
                           htmlFor={`${section.key}-${option}`}
                           className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 capitalize"
                         >
-                          {option === 'sync-error' ? 'Sync Error' : option}
+                          {option === 'synced' ? 'Synced' : option === 'pending' ? 'Sync Pending' : option}
                         </label>
                       </div>
                     ))}

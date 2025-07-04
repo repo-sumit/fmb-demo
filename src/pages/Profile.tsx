@@ -15,7 +15,8 @@ const Profile: React.FC = () => {
   const [profile, setProfile] = useState({
     userId: 'ANT_123',
     name: 'Anita Sharma',
-    gender: 'Female',    state: 'Gujarat',
+    gender: 'Female',
+    state: 'Gujarat',
     district: 'Ahmedabad',
     designation: 'Teacher'
   });
@@ -126,23 +127,12 @@ const Profile: React.FC = () => {
 
           <div>
             <Label htmlFor="designation">Designation</Label>
-            <Select
+            <Input
+              id="designation"
               value={profile.designation}
-              onValueChange={(value) => setProfile(prev => ({ ...prev, designation: value }))}
-              disabled={!isEditing}
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Teacher">Teacher</SelectItem>
-                <SelectItem value="Principal">Principal</SelectItem>
-                <SelectItem value="CRC">CRC</SelectItem>
-                <SelectItem value="BRC">BRC</SelectItem>
-                <SelectItem value="DEO">DEO</SelectItem>
-                <SelectItem value="State Admin">State Admin</SelectItem>
-              </SelectContent>
-            </Select>
+              disabled
+              className="bg-muted"
+            />
           </div>
         </div>
 
