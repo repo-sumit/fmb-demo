@@ -15,10 +15,9 @@ const Profile: React.FC = () => {
   const [profile, setProfile] = useState({
     userId: 'ANT_123',
     name: 'Anita Sharma',
-    gender: 'Female',
-    state: 'Gujarat',
+    gender: 'Female',    state: 'Gujarat',
     district: 'Ahmedabad',
-    organization: 'Rural Development Foundation'
+    designation: 'Teacher'
   });
 
   const handleSave = () => {
@@ -126,13 +125,24 @@ const Profile: React.FC = () => {
           </div>
 
           <div>
-            <Label htmlFor="organization">Organization</Label>
-            <Input
-              id="organization"
-              value={profile.organization}
-              disabled
-              className="bg-muted"
-            />
+            <Label htmlFor="designation">Designation</Label>
+            <Select
+              value={profile.designation}
+              onValueChange={(value) => setProfile(prev => ({ ...prev, designation: value }))}
+              disabled={!isEditing}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Teacher">Teacher</SelectItem>
+                <SelectItem value="Principal">Principal</SelectItem>
+                <SelectItem value="CRC">CRC</SelectItem>
+                <SelectItem value="BRC">BRC</SelectItem>
+                <SelectItem value="DEO">DEO</SelectItem>
+                <SelectItem value="State Admin">State Admin</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
 
@@ -167,23 +177,25 @@ const Profile: React.FC = () => {
 
         <Separator />
 
-        {/* Menu Items */}
-        <div className="space-y-2">
+        {/* Enhanced Menu Items with better visibility */}
+        <div className="space-y-3">
           <Button
-            variant="ghost"
+            variant="default"
             onClick={handleViewHistory}
-            className="w-full justify-start h-12"
+            className="w-full justify-start h-14 text-lg font-semibold bg-primary/10 text-primary hover:bg-primary/20 border border-primary/20"
+            size="lg"
           >
-            <History size={20} className="mr-3" />
+            <History size={24} className="mr-4" />
             My Responses
           </Button>
 
           <Button
-            variant="ghost"
+            variant="destructive"
             onClick={handleLogout}
-            className="w-full justify-start h-12 text-red-600 hover:text-red-700 hover:bg-red-50"
+            className="w-full justify-start h-14 text-lg font-semibold"
+            size="lg"
           >
-            <LogOut size={20} className="mr-3" />
+            <LogOut size={24} className="mr-4" />
             Logout
           </Button>
         </div>

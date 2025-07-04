@@ -18,32 +18,40 @@ const MySurvey: React.FC = () => {
     status: [] as string[]
   });
 
-  // Mock data - in real app this would come from state management
+  // Education-focused mock data
   const surveys: Survey[] = [
     {
       id: 'SCH_2025_001',
-      name: 'Annual School Audit',
-      description: 'Comprehensive assessment of school infrastructure, teaching quality, and student outcomes',
-      type: 'School',
+      name: 'Annual School Infrastructure Audit',
+      description: 'Comprehensive assessment of school buildings, classrooms, toilets, drinking water, and playground facilities',
+      type: 'In School',
       access: 'Public',
       languages: ['Hindi', 'English'],
       progress: 65
     },
     {
-      id: 'HLT_2025_002',
-      name: 'Primary Health Center Survey',
-      description: 'Evaluation of healthcare facilities and service delivery in rural areas',
-      type: 'Health',
-      access: 'Private',
+      id: 'EDU_2025_002',
+      name: 'Teacher Training Program Evaluation',
+      description: 'Assessment of ongoing teacher professional development initiatives and their impact on classroom teaching',
+      type: 'Open',
+      access: 'Public',
       languages: ['Hindi', 'Gujarati'],
     },
     {
-      id: 'INF_2025_003',
-      name: 'Water & Sanitation Assessment',
-      description: 'Infrastructure survey focusing on water supply and sanitation facilities',
-      type: 'Infrastructure',
+      id: 'SCH_2025_003',
+      name: 'Mid-Day Meal Quality Assessment',
+      description: 'Evaluation of nutritional quality, hygiene standards, and student satisfaction with school meal programs',
+      type: 'In School',
       access: 'Public',
       languages: ['English'],
+    },
+    {
+      id: 'EDU_2025_004',
+      name: 'Digital Learning Infrastructure Survey',
+      description: 'Assessment of computer labs, internet connectivity, smart classrooms, and digital learning resources',
+      type: 'In School',
+      access: 'Public',
+      languages: ['Hindi', 'English'],
     }
   ];
 

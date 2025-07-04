@@ -4,37 +4,38 @@ import { useNavigate } from 'react-router-dom';
 import SurveyCard, { Survey } from '@/components/SurveyCard';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Clock } from 'lucide-react';
+import { toast } from '@/hooks/use-toast';
 
 const History: React.FC = () => {
   const navigate = useNavigate();
 
-  // Mock history data
+  // Mock history data with education-focused surveys
   const [historyItems] = useState<Survey[]>([
     {
       id: 'SCH_2025_001',
-      name: 'Annual School Audit',
-      description: 'Comprehensive assessment of school infrastructure, teaching quality, and student outcomes',
-      type: 'School',
+      name: 'Annual School Infrastructure Audit',
+      description: 'Comprehensive assessment of school buildings, classrooms, toilets, drinking water, and playground facilities',
+      type: 'In School',
       access: 'Public',
       languages: ['Hindi', 'English'],
       status: 'synced',
       lastModified: '4 Jul 2025, 10:42 AM'
     },
     {
-      id: 'HLT_2025_002',
-      name: 'Primary Health Center Survey',
-      description: 'Evaluation of healthcare facilities and service delivery in rural areas',
-      type: 'Health',
-      access: 'Private',
+      id: 'EDU_2025_002',
+      name: 'Teacher Training Program Evaluation',
+      description: 'Assessment of ongoing teacher professional development initiatives and their impact on classroom teaching',
+      type: 'Open',
+      access: 'Public',
       languages: ['Hindi', 'Gujarati'],
       status: 'pending',
       lastModified: '3 Jul 2025, 3:15 PM'
     },
     {
-      id: 'INF_2025_003',
-      name: 'Water & Sanitation Assessment',
-      description: 'Infrastructure survey focusing on water supply and sanitation facilities',
-      type: 'Infrastructure',
+      id: 'SCH_2025_003',
+      name: 'Mid-Day Meal Quality Assessment',
+      description: 'Evaluation of nutritional quality, hygiene standards, and student satisfaction with school meal programs',
+      type: 'In School',
       access: 'Public',
       languages: ['English'],
       status: 'sync-error',
@@ -43,8 +44,37 @@ const History: React.FC = () => {
   ]);
 
   const handleViewResponse = (surveyId: string) => {
-    // In real app, navigate to response view
-    console.log(`Viewing response for survey: ${surveyId}`);
+    // Check if response exists in local storage
+    const localResponse = localStorage.getItem(`response_${surveyId}`);
+    
+    if (localResponse) {
+      try {
+        const response = JSON.parse(localResponse);
+        // Navigate to a view response page or show modal with data
+        toast({
+          title: "Response Found",
+          description: `Survey completed on ${new Date(response.completedAt).toLocaleDateString()}. Local data displayed.`,
+        });
+        
+        // For demo purposes, log the response data
+        console.log('Survey Response:', response);
+        
+        // In a real app, you would navigate to a dedicated view page
+        // navigate(`/view-response/${surveyId}`);
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Could not load response data.",
+          variant: "destructive"
+        });
+      }
+    } else {
+      toast({
+        title: "No Local Data",
+        description: "Response data not found in local storage.",
+        variant: "destructive"
+      });
+    }
   };
 
   return (

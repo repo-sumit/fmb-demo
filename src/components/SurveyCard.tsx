@@ -8,7 +8,7 @@ export interface Survey {
   id: string;
   name: string;
   description: string;
-  type: 'School' | 'Health' | 'Infrastructure';
+  type: 'Open' | 'In School';
   access: 'Public' | 'Private';
   languages: string[];
   status?: 'completed' | 'pending' | 'synced' | 'sync-error';
@@ -68,15 +68,13 @@ const SurveyCard: React.FC<SurveyCardProps> = ({
     }
 
     if (isHistory) {
-      const canView = survey.status === 'synced' || survey.status === 'completed';
+      // Enable View Response for all history items - will show local data
       return (
         <Button 
           onClick={() => onView?.(survey.id)}
-          disabled={!canView}
-          variant={canView ? "default" : "secondary"}
           className="w-full mt-4"
         >
-          {canView ? 'View Response' : 'Pending Sync'}
+          View Response
         </Button>
       );
     }

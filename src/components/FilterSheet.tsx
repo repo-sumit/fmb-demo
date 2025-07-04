@@ -24,7 +24,7 @@ const FilterSheet: React.FC<FilterSheetProps> = ({ filters, onFiltersChange, chi
     {
       title: 'Type',
       key: 'types' as keyof FilterOptions,
-      options: ['School', 'Health', 'Infrastructure']
+      options: ['Open', 'In School']
     },
     {
       title: 'Access',
