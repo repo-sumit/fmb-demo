@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -50,7 +49,7 @@ const SurveyCard: React.FC<SurveyCardProps> = ({
     
     return (
       <Badge variant="secondary" className={`${config.className} gap-1`}>
-        {config.icon}
+        {'icon' in config && config.icon}
         {config.label}
       </Badge>
     );
