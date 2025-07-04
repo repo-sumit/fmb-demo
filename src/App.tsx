@@ -1,27 +1,104 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+
+// Pages
+import Login from "./pages/Login";
+import MySurvey from "./pages/MySurvey";
+import AddSurvey from "./pages/AddSurvey";
+import Profile from "./pages/Profile";
+import SurveyForm from "./pages/SurveyForm";
+import History from "./pages/History";
 import NotFound from "./pages/NotFound";
+
+// Components
+import BottomNavigation from "./components/BottomNavigation";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+// Protected Route wrapper
+const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const isAuthenticated = localStorage.getItem('userToken');
+  return isAuthenticated ? <>{children}</> : <Navigate to="/login" replace />;
+};
+
+// Layout wrapper for authenticated pages
+const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  return (
+    <div className="min-h-screen bg-background">
+      {children}
+      <BottomNavigation />
+    </div>
+  );
+};
+
+const App = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    // Check authentication status
+    const token = localStorage.getItem('userToken');
+    setIsAuthenticated(!!token);
+  }, []);
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            {/* Public routes */}
+            <Route path="/login" element={<Login />} />
+            
+            {/* Protected routes */}
+            <Route path="/" element={
+              <ProtectedRoute>
+                <AppLayout>
+                  <MySurvey />
+                </AppLayout>
+              </ProtectedRoute>
+            } />
+            
+            <Route path="/add-survey" element={
+              <ProtectedRoute>
+                <AppLayout>
+                  <AddSurvey />
+                </AppLayout>
+              </ProtectedRoute>
+            } />
+            
+            <Route path="/profile" element={
+              <ProtectedRoute>
+                <AppLayout>
+                  <Profile />
+                </AppLayout>
+              </ProtectedRoute>
+            } />
+            
+            <Route path="/history" element={
+              <ProtectedRoute>
+                <History />
+              </ProtectedRoute>
+            } />
+            
+            <Route path="/survey/:surveyId" element={
+              <ProtectedRoute>
+                <SurveyForm />
+              </ProtectedRoute>
+            } />
+            
+            {/* Catch-all route */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;
