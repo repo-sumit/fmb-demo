@@ -7,6 +7,7 @@ import FilterSheet from '@/components/FilterSheet';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Filter, Search } from 'lucide-react';
+import { toast } from '@/hooks/use-toast';
 
 const MySurvey: React.FC = () => {
   const navigate = useNavigate();
@@ -18,7 +19,7 @@ const MySurvey: React.FC = () => {
     status: [] as string[]
   });
 
-  // Education-focused mock data
+  // Enhanced education-focused mock data with 10+ school surveys
   const surveys: Survey[] = [
     {
       id: 'SCH_2025_001',
@@ -46,12 +47,79 @@ const MySurvey: React.FC = () => {
       languages: ['English'],
     },
     {
-      id: 'EDU_2025_004',
+      id: 'SCH_2025_004',
       name: 'Digital Learning Infrastructure Survey',
       description: 'Assessment of computer labs, internet connectivity, smart classrooms, and digital learning resources',
       type: 'In School',
       access: 'Public',
       languages: ['Hindi', 'English'],
+    },
+    {
+      id: 'SCH_2025_005',
+      name: 'School Safety and Security Audit',
+      description: 'Comprehensive evaluation of emergency protocols, fire safety measures, boundary walls, and security arrangements',
+      type: 'In School',
+      access: 'Public',
+      languages: ['Hindi', 'English'],
+      progress: 30
+    },
+    {
+      id: 'SCH_2025_006',
+      name: 'Library and Learning Resources Assessment',
+      description: 'Evaluation of library facilities, textbook availability, reference materials, and reading programs',
+      type: 'In School',
+      access: 'Public',
+      languages: ['English', 'Gujarati'],
+    },
+    {
+      id: 'EDU_2025_007',
+      name: 'Student Performance Analytics',
+      description: 'Analysis of academic achievements, extracurricular participation, and overall student development metrics',
+      type: 'Open',
+      access: 'Public',
+      languages: ['Hindi', 'English'],
+      progress: 80
+    },
+    {
+      id: 'SCH_2025_008',
+      name: 'Inclusive Education Implementation',
+      description: 'Assessment of special needs support, accessibility features, and inclusive teaching practices',
+      type: 'In School',
+      access: 'Public',
+      languages: ['Hindi', 'English', 'Gujarati'],
+    },
+    {
+      id: 'SCH_2025_009',
+      name: 'Parent-Teacher Engagement Survey',
+      description: 'Evaluation of parent involvement, PTA effectiveness, and home-school communication channels',
+      type: 'In School',
+      access: 'Public',
+      languages: ['Hindi', 'Gujarati'],
+    },
+    {
+      id: 'SCH_2025_010',
+      name: 'Environmental Sustainability Audit',
+      description: 'Assessment of green initiatives, waste management, energy conservation, and environmental awareness programs',
+      type: 'In School',
+      access: 'Public',
+      languages: ['English'],
+    },
+    {
+      id: 'EDU_2025_011',
+      name: 'Community Education Outreach',
+      description: 'Evaluation of adult literacy programs, community skill development, and public awareness campaigns',
+      type: 'Open',
+      access: 'Public',
+      languages: ['Hindi', 'Gujarati'],
+    },
+    {
+      id: 'SCH_2025_012',
+      name: 'Health and Wellness Program Review',
+      description: 'Assessment of health checkups, vaccination drives, mental health support, and wellness initiatives',
+      type: 'In School',
+      access: 'Public',
+      languages: ['Hindi', 'English'],
+      progress: 45
     }
   ];
 
@@ -66,11 +134,36 @@ const MySurvey: React.FC = () => {
   });
 
   const handleStartSurvey = (surveyId: string) => {
-    navigate(`/survey/${surveyId}`);
+    const survey = surveys.find(s => s.id === surveyId);
+    if (survey?.type === 'In School') {
+      // Redirect to UDISE validation
+      navigate(`/udise-validation/${surveyId}`);
+    } else {
+      navigate(`/survey/${surveyId}`);
+    }
   };
 
   const handleResumeSurvey = (surveyId: string) => {
     navigate(`/survey/${surveyId}?resume=true`);
+  };
+
+  const handleDownloadSurvey = (surveyId: string) => {
+    const survey = surveys.find(s => s.id === surveyId);
+    if (!survey) return;
+
+    // Simulate download with progress
+    toast({
+      title: "Download Started",
+      description: `Preparing ${survey.name} for offline use...`,
+    });
+
+    // Simulate download completion after 2 seconds
+    setTimeout(() => {
+      toast({
+        title: "Download Complete",
+        description: `${survey.name} is ready for offline use`,
+      });
+    }, 2000);
   };
 
   return (
@@ -120,6 +213,7 @@ const MySurvey: React.FC = () => {
               survey={survey}
               onStart={handleStartSurvey}
               onResume={handleResumeSurvey}
+              onDownload={handleDownloadSurvey}
             />
           ))
         ) : (

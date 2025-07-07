@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
-import { User, History, LogOut, Save } from 'lucide-react';
+import { User, LogOut, Save } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
 const Profile: React.FC = () => {
@@ -30,10 +30,6 @@ const Profile: React.FC = () => {
         description: "Your profile has been saved successfully!",
       });
     }, 500);
-  };
-
-  const handleViewHistory = () => {
-    navigate('/history');
   };
 
   const handleLogout = () => {
@@ -167,18 +163,8 @@ const Profile: React.FC = () => {
 
         <Separator />
 
-        {/* Enhanced Menu Items with better visibility */}
+        {/* Logout Button */}
         <div className="space-y-3">
-          <Button
-            variant="default"
-            onClick={handleViewHistory}
-            className="w-full justify-start h-14 text-lg font-semibold bg-primary/10 text-primary hover:bg-primary/20 border border-primary/20"
-            size="lg"
-          >
-            <History size={24} className="mr-4" />
-            My Responses
-          </Button>
-
           <Button
             variant="destructive"
             onClick={handleLogout}

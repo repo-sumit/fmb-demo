@@ -13,10 +13,12 @@ import AddSurvey from "./pages/AddSurvey";
 import Profile from "./pages/Profile";
 import SurveyForm from "./pages/SurveyForm";
 import History from "./pages/History";
+import UdiseValidation from "./pages/UdiseValidation";
 import NotFound from "./pages/NotFound";
 
 // Components
 import BottomNavigation from "./components/BottomNavigation";
+import ProfileButton from "./components/ProfileButton";
 
 const queryClient = new QueryClient();
 
@@ -30,6 +32,7 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
 const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
     <div className="min-h-screen bg-background">
+      <ProfileButton />
       {children}
       <BottomNavigation />
     </div>
@@ -82,7 +85,15 @@ const App = () => {
             
             <Route path="/history" element={
               <ProtectedRoute>
-                <History />
+                <AppLayout>
+                  <History />
+                </AppLayout>
+              </ProtectedRoute>
+            } />
+            
+            <Route path="/udise-validation/:surveyId" element={
+              <ProtectedRoute>
+                <UdiseValidation />
               </ProtectedRoute>
             } />
             

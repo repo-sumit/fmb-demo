@@ -1,8 +1,10 @@
-import React from 'react';
+
+import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Check, ArrowDown } from 'lucide-react';
+import { Progress } from '@/components/ui/progress';
+import { Check, ArrowDown, Download, School } from 'lucide-react';
 
 export interface Survey {
   id: string;
@@ -14,6 +16,7 @@ export interface Survey {
   status?: 'completed' | 'pending' | 'synced' | 'sync-error';
   lastModified?: string;
   progress?: number;
+  udiseCode?: string;
 }
 
 interface SurveyCardProps {
@@ -22,6 +25,7 @@ interface SurveyCardProps {
   onResume?: (surveyId: string) => void;
   onAdd?: (surveyId: string) => void;
   onView?: (surveyId: string) => void;
+  onDownload?: (surveyId: string) => void;
   showAddButton?: boolean;
   isHistory?: boolean;
 }
@@ -32,9 +36,13 @@ const SurveyCard: React.FC<SurveyCardProps> = ({
   onResume,
   onAdd,
   onView,
+  onDownload,
   showAddButton = false,
   isHistory = false
 }) => {
+  const [downloadProgress, setDownloadProgress] = useState(0);
+  const [isDownloading, setIsDownloading] = useState(false);
+
   const getStatusBadge = () => {
     if (!survey.status) return null;
 
@@ -55,6 +63,26 @@ const SurveyCard: React.FC<SurveyCardProps> = ({
     );
   };
 
+  const handleDownload = () => {
+    if (!onDownload) return;
+    
+    setIsDownloading(true);
+    setDownloadProgress(0);
+    
+    // Simulate download progress
+    const interval = setInterval(() => {
+      setDownloadProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(interval);
+          setIsDownloading(false);
+          onDownload(survey.id);
+          return 100;
+        }
+        return prev + 10;
+      });
+    }, 200);
+  };
+
   const getActionButton = () => {
     if (showAddButton) {
       return (
@@ -68,7 +96,6 @@ const SurveyCard: React.FC<SurveyCardProps> = ({
     }
 
     if (isHistory) {
-      // Enable View Response for all history items - will show local data
       return (
         <Button 
           onClick={() => onView?.(survey.id)}
@@ -79,7 +106,8 @@ const SurveyCard: React.FC<SurveyCardProps> = ({
       );
     }
 
-    if (survey.progress && survey.progress > 0) {
+    // Resume logic: Only show resume for "Open" surveys with progress > 0
+    if (survey.progress && survey.progress > 0 && survey.type === 'Open') {
       return (
         <div className="mt-4 space-y-2">
           <div className="flex justify-between text-sm text-muted-foreground">
@@ -124,6 +152,14 @@ const SurveyCard: React.FC<SurveyCardProps> = ({
             {getStatusBadge()}
           </div>
 
+          {/* UDISE Code for In School surveys in history */}
+          {isHistory && survey.type === 'In School' && survey.udiseCode && (
+            <div className="flex items-center gap-2 text-sm text-muted-foreground bg-blue-50 p-2 rounded">
+              <School size={16} className="text-blue-600" />
+              <span>UDISE: {survey.udiseCode}</span>
+            </div>
+          )}
+
           {/* Description */}
           <p className="body text-muted-foreground">{survey.description}</p>
 
@@ -151,6 +187,30 @@ const SurveyCard: React.FC<SurveyCardProps> = ({
             <p className="caption text-muted-foreground">
               Last synced: {survey.lastModified}
             </p>
+          )}
+
+          {/* Download section */}
+          {!isHistory && !showAddButton && onDownload && (
+            <div className="space-y-2">
+              {isDownloading && (
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm text-muted-foreground">
+                    <span>Downloading...</span>
+                    <span>{downloadProgress}%</span>
+                  </div>
+                  <Progress value={downloadProgress} className="h-2" />
+                </div>
+              )}
+              <Button 
+                variant="outline" 
+                onClick={handleDownload}
+                disabled={isDownloading}
+                className="w-full"
+              >
+                <Download size={16} className="mr-2" />
+                {isDownloading ? 'Downloading...' : 'Download for Offline'}
+              </Button>
+            </div>
           )}
 
           {/* Action button */}

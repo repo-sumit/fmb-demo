@@ -1,33 +1,28 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SurveyCard, { Survey } from '@/components/SurveyCard';
+import FilterSheet from '@/components/FilterSheet';
 import ViewResponse from '@/components/ViewResponse';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Calendar } from '@/components/ui/calendar';
+import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Checkbox } from '@/components/ui/checkbox';
-import { ArrowLeft, Clock, Filter, Calendar as CalendarIcon, X } from 'lucide-react';
-import { toast } from '@/hooks/use-toast';
-import { format, isWithinInterval, parseISO } from 'date-fns';
-import { cn } from '@/lib/utils';
-
-interface FilterOptions {
-  types: string[];
-  status: string[];
-  dateRange: {
-    from: Date | undefined;
-    to: Date | undefined;
-  };
-}
+import { Calendar } from '@/components/ui/calendar';
+import { Filter, Search, Calendar as CalendarIcon, ArrowLeft } from 'lucide-react';
+import { format } from 'date-fns';
 
 const History: React.FC = () => {
   const navigate = useNavigate();
-  const [viewingResponse, setViewingResponse] = useState<{ surveyId: string; surveyName: string } | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedSurvey, setSelectedSurvey] = useState<Survey | null>(null);
+  const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>({});
+  const [filters, setFilters] = useState({
+    types: [] as string[],
+    access: [] as string[],
+    status: [] as string[]
+  });
 
-  // Mock history data with education-focused surveys
-  const [allHistoryItems] = useState<Survey[]>([
+  // Mock historical data with UDISE codes for In School surveys
+  const historicalSurveys: Survey[] = [
     {
       id: 'SCH_2025_001',
       name: 'Annual School Infrastructure Audit',
@@ -35,8 +30,9 @@ const History: React.FC = () => {
       type: 'In School',
       access: 'Public',
       languages: ['Hindi', 'English'],
-      status: 'synced',
-      lastModified: '4 Jul 2025, 10:42 AM'
+      status: 'completed',
+      lastModified: '2025-01-05',
+      udiseCode: '12345678901'
     },
     {
       id: 'EDU_2025_002',
@@ -45,8 +41,8 @@ const History: React.FC = () => {
       type: 'Open',
       access: 'Public',
       languages: ['Hindi', 'Gujarati'],
-      status: 'pending',
-      lastModified: '3 Jul 2025, 3:15 PM'
+      status: 'synced',
+      lastModified: '2025-01-04'
     },
     {
       id: 'SCH_2025_003',
@@ -56,335 +52,158 @@ const History: React.FC = () => {
       access: 'Public',
       languages: ['English'],
       status: 'pending',
-      lastModified: '2 Jul 2025, 11:30 AM'
-    },
-    {
-      id: 'EDU_2025_004',
-      name: 'Digital Learning Resources Survey',
-      description: 'Assessment of available technology and digital learning tools in schools',
-      type: 'Open',
-      access: 'Public',
-      languages: ['Hindi', 'English'],
-      status: 'synced',
-      lastModified: '1 Jul 2025, 2:20 PM'
+      lastModified: '2025-01-03',
+      udiseCode: '23456789012'
     },
     {
       id: 'SCH_2025_005',
-      name: 'Student Enrollment and Attendance Tracking',
-      description: 'Monthly survey to track student enrollment patterns and attendance rates',
+      name: 'School Safety and Security Audit',
+      description: 'Comprehensive evaluation of emergency protocols, fire safety measures, boundary walls, and security arrangements',
       type: 'In School',
-      access: 'Private',
-      languages: ['Hindi'],
+      access: 'Public',
+      languages: ['Hindi', 'English'],
       status: 'synced',
-      lastModified: '30 Jun 2025, 9:15 AM'
-    }
-  ]);
-
-  const [filters, setFilters] = useState<FilterOptions>({
-    types: [],
-    status: [],
-    dateRange: { from: undefined, to: undefined }
-  });
-
-  const [filteredItems, setFilteredItems] = useState<Survey[]>(allHistoryItems);
-
-  const handleViewResponse = (surveyId: string) => {
-    const survey = allHistoryItems.find(s => s.id === surveyId);
-    if (survey) {
-      setViewingResponse({ surveyId, surveyName: survey.name });
-    }
-  };
-
-  const handleBackFromResponse = () => {
-    setViewingResponse(null);
-  };
-
-  const applyFilters = () => {
-    let filtered = allHistoryItems;
-
-    // Filter by type
-    if (filters.types.length > 0) {
-      filtered = filtered.filter(item => filters.types.includes(item.type));
-    }
-
-    // Filter by status
-    if (filters.status.length > 0) {
-      filtered = filtered.filter(item => 
-        item.status && filters.status.includes(item.status)
-      );
-    }
-
-    // Filter by date range
-    if (filters.dateRange.from || filters.dateRange.to) {
-      filtered = filtered.filter(item => {
-        if (!item.lastModified) return false;
-        
-        try {
-          // Parse the date string "4 Jul 2025, 10:42 AM" format
-          const dateParts = item.lastModified.split(', ');
-          const dateStr = dateParts[0];
-          const [day, month, year] = dateStr.split(' ');
-          const monthMap: { [key: string]: string } = {
-            'Jan': '01', 'Feb': '02', 'Mar': '03', 'Apr': '04',
-            'May': '05', 'Jun': '06', 'Jul': '07', 'Aug': '08',
-            'Sep': '09', 'Oct': '10', 'Nov': '11', 'Dec': '12'
-          };
-          const isoDate = `${year}-${monthMap[month]}-${day.padStart(2, '0')}`;
-          const itemDate = parseISO(isoDate);
-
-          if (filters.dateRange.from && filters.dateRange.to) {
-            return isWithinInterval(itemDate, {
-              start: filters.dateRange.from,
-              end: filters.dateRange.to
-            });
-          } else if (filters.dateRange.from) {
-            return itemDate >= filters.dateRange.from;
-          } else if (filters.dateRange.to) {
-            return itemDate <= filters.dateRange.to;
-          }
-        } catch (error) {
-          console.error('Date parsing error:', error);
-          return true;
-        }
-        return true;
-      });
-    }
-
-    setFilteredItems(filtered);
-  };
-
-  React.useEffect(() => {
-    applyFilters();
-  }, [filters]);
-
-  const clearFilters = () => {
-    setFilters({
-      types: [],
-      status: [],
-      dateRange: { from: undefined, to: undefined }
-    });
-  };
-
-  const getTotalFilterCount = () => {
-    let count = filters.types.length + filters.status.length;
-    if (filters.dateRange.from || filters.dateRange.to) count += 1;
-    return count;
-  };
-
-  const filterSections = [
-    {
-      title: 'Survey Type',
-      key: 'types' as keyof Pick<FilterOptions, 'types' | 'status'>,
-      options: ['Open', 'In School']
-    },
-    {
-      title: 'Sync Status',
-      key: 'status' as keyof Pick<FilterOptions, 'types' | 'status'>,
-      options: ['synced', 'pending']
+      lastModified: '2025-01-02',
+      udiseCode: '34567890123'
     }
   ];
 
-  const handleFilterToggle = (section: keyof Pick<FilterOptions, 'types' | 'status'>, option: string) => {
-    setFilters(prev => ({
-      ...prev,
-      [section]: prev[section].includes(option)
-        ? prev[section].filter(item => item !== option)
-        : [...prev[section], option]
-    }));
+  // filtering logic, handlers, etc.
+
+  const filteredSurveys = historicalSurveys.filter(survey => {
+    const matchesSearch = survey.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         survey.id.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    const matchesType = filters.types.length === 0 || filters.types.includes(survey.type);
+    const matchesAccess = filters.access.length === 0 || filters.access.includes(survey.access);
+    const matchesStatus = filters.status.length === 0 || filters.status.includes(survey.status || '');
+    
+    // Date filtering
+    let matchesDate = true;
+    if (dateRange.from && survey.lastModified) {
+      const surveyDate = new Date(survey.lastModified);
+      matchesDate = surveyDate >= dateRange.from;
+    }
+    if (dateRange.to && survey.lastModified) {
+      const surveyDate = new Date(survey.lastModified);
+      matchesDate = matchesDate && surveyDate <= dateRange.to;
+    }
+    
+    return matchesSearch && matchesType && matchesAccess && matchesStatus && matchesDate;
+  });
+
+  const handleViewResponse = (surveyId: string) => {
+    const survey = historicalSurveys.find(s => s.id === surveyId);
+    if (survey) {
+      setSelectedSurvey(survey);
+    }
   };
 
-  // If viewing a response, show the ViewResponse component
-  if (viewingResponse) {
-    return (
-      <ViewResponse
-        surveyId={viewingResponse.surveyId}
-        surveyName={viewingResponse.surveyName}
-        onBack={handleBackFromResponse}
-      />
-    );
+  if (selectedSurvey) {
+    return <ViewResponse survey={selectedSurvey} onBack={() => setSelectedSurvey(null)} />;
   }
 
   return (
     <div className="pb-20 pt-4 px-4 min-h-screen bg-background">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigate('/profile')}
-            className="mr-2"
+      <div className="flex items-center gap-4 mb-6">
+        <Button 
+          variant="ghost" 
+          size="icon"
+          onClick={() => navigate(-1)}
+        >
+          <ArrowLeft size={20} />
+        </Button>
+        <h1 className="display-l">My Responses</h1>
+      </div>
+
+      {/* Search, Date, and Filter */}
+      <div className="space-y-3 mb-6">
+        <div className="flex gap-3">
+          <div className="flex-1 relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={16} />
+            <Input
+              placeholder="Search responses..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+          <FilterSheet filters={filters} onFiltersChange={setFilters}>
+            <Button variant="outline" size="icon" className="tap-target">
+              <Filter size={16} />
+            </Button>
+          </FilterSheet>
+        </div>
+
+        {/* Date Range Picker */}
+        <div className="flex gap-2">
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" className="flex-1 justify-start text-left font-normal">
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {dateRange.from ? format(dateRange.from, "MMM dd, yyyy") : "From date"}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="single"
+                selected={dateRange.from}
+                onSelect={(date) => setDateRange(prev => ({ ...prev, from: date }))}
+                initialFocus
+              />
+            </PopoverContent>
+          </Popover>
+
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" className="flex-1 justify-start text-left font-normal">
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {dateRange.to ? format(dateRange.to, "MMM dd, yyyy") : "To date"}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="single"
+                selected={dateRange.to}
+                onSelect={(date) => setDateRange(prev => ({ ...prev, to: date }))}
+                initialFocus
+              />
+            </PopoverContent>
+          </Popover>
+        </div>
+
+        {/* Clear dates button */}
+        {(dateRange.from || dateRange.to) && (
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => setDateRange({})}
+            className="w-full"
           >
-            <ArrowLeft size={20} />
+            Clear Date Filter
           </Button>
-          <h1 className="display-l">My Responses</h1>
-        </div>
-
-        {/* Filter Button */}
-        <Sheet>
-          <SheetTrigger asChild>
-            <div className="relative">
-              <Button variant="outline" size="icon">
-                <Filter size={20} />
-              </Button>
-              {getTotalFilterCount() > 0 && (
-                <Badge className="absolute -top-2 -right-2 bg-primary text-white text-xs h-5 w-5 rounded-full flex items-center justify-center p-0">
-                  {getTotalFilterCount()}
-                </Badge>
-              )}
-            </div>
-          </SheetTrigger>
-          <SheetContent side="bottom" className="h-[80vh]">
-            <SheetHeader>
-              <SheetTitle>Filter Responses</SheetTitle>
-            </SheetHeader>
-            
-            <div className="mt-6 space-y-6">
-              {/* Date Range Filter */}
-              <div>
-                <h4 className="font-medium mb-3">Date Range</h4>
-                <div className="space-y-3">
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="text-sm text-muted-foreground mb-1 block">From</label>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button
-                            variant="outline"
-                            className={cn(
-                              "w-full justify-start text-left font-normal",
-                              !filters.dateRange.from && "text-muted-foreground"
-                            )}
-                          >
-                            <CalendarIcon className="mr-2 h-4 w-4" />
-                            {filters.dateRange.from ? (
-                              format(filters.dateRange.from, "dd MMM yyyy")
-                            ) : (
-                              <span>Pick date</span>
-                            )}
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={filters.dateRange.from}
-                            onSelect={(date) => setFilters(prev => ({
-                              ...prev,
-                              dateRange: { ...prev.dateRange, from: date }
-                            }))}
-                            className="pointer-events-auto"
-                            initialFocus
-                          />
-                        </PopoverContent>
-                      </Popover>
-                    </div>
-                    <div>
-                      <label className="text-sm text-muted-foreground mb-1 block">To</label>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button
-                            variant="outline"
-                            className={cn(
-                              "w-full justify-start text-left font-normal",
-                              !filters.dateRange.to && "text-muted-foreground"
-                            )}
-                          >
-                            <CalendarIcon className="mr-2 h-4 w-4" />
-                            {filters.dateRange.to ? (
-                              format(filters.dateRange.to, "dd MMM yyyy")
-                            ) : (
-                              <span>Pick date</span>
-                            )}
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={filters.dateRange.to}
-                            onSelect={(date) => setFilters(prev => ({
-                              ...prev,
-                              dateRange: { ...prev.dateRange, to: date }
-                            }))}
-                            className="pointer-events-auto"
-                            initialFocus
-                          />
-                        </PopoverContent>
-                      </Popover>
-                    </div>
-                  </div>
-                  {(filters.dateRange.from || filters.dateRange.to) && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setFilters(prev => ({
-                        ...prev,
-                        dateRange: { from: undefined, to: undefined }
-                      }))}
-                      className="text-muted-foreground"
-                    >
-                      <X className="mr-1 h-3 w-3" />
-                      Clear dates
-                    </Button>
-                  )}
-                </div>
-              </div>
-
-              {/* Other Filters */}
-              {filterSections.map((section) => (
-                <div key={section.key}>
-                  <h4 className="font-medium mb-3">{section.title}</h4>
-                  <div className="space-y-2">
-                    {section.options.map((option) => (
-                      <div key={option} className="flex items-center space-x-2">
-                        <Checkbox
-                          id={`${section.key}-${option}`}
-                          checked={filters[section.key].includes(option)}
-                          onCheckedChange={() => handleFilterToggle(section.key, option)}
-                        />
-                        <label
-                          htmlFor={`${section.key}-${option}`}
-                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 capitalize"
-                        >
-                          {option === 'synced' ? 'Synced' : option === 'pending' ? 'Sync Pending' : option}
-                        </label>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div className="flex gap-3 mt-6 pt-6 border-t">
-              <Button variant="outline" onClick={clearFilters} className="flex-1">
-                Clear All
-              </Button>
-              <Button onClick={() => {}} className="flex-1">
-                Apply Filters
-              </Button>
-            </div>
-          </SheetContent>
-        </Sheet>
+        )}
       </div>
 
-      {/* Summary */}
-      <div className="bg-primary/5 rounded-lg p-4 mb-6">
-        <div className="flex items-center gap-2 mb-2">
-          <Clock size={16} className="text-primary" />
-          <span className="font-medium">Response History</span>
+      {/* Active filter chips */}
+      {(filters.types.length > 0 || filters.access.length > 0 || filters.status.length > 0) && (
+        <div className="flex flex-wrap gap-2 mb-4">
+          {[...filters.types, ...filters.access, ...filters.status].map((filter, index) => (
+            <div key={index} className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm">
+              {filter}
+            </div>
+          ))}
         </div>
-        <p className="body text-muted-foreground">
-          Showing {filteredItems.length} of {allHistoryItems.length} completed surveys
-          {getTotalFilterCount() > 0 && ` (${getTotalFilterCount()} filter${getTotalFilterCount() > 1 ? 's' : ''} applied)`}
-        </p>
-      </div>
+      )}
 
-      {/* History List */}
+      {/* Survey List */}
       <div className="space-y-4">
-        {filteredItems.length > 0 ? (
-          filteredItems.map((item) => (
+        {filteredSurveys.length > 0 ? (
+          filteredSurveys.map((survey) => (
             <SurveyCard
-              key={item.id}
-              survey={item}
+              key={survey.id}
+              survey={survey}
               onView={handleViewResponse}
               isHistory={true}
             />
@@ -392,22 +211,15 @@ const History: React.FC = () => {
         ) : (
           <div className="text-center py-12">
             <div className="w-24 h-24 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
-              <Clock size={32} className="text-muted-foreground" />
+              <Search size={32} className="text-muted-foreground" />
             </div>
-            <h3 className="font-semibold mb-2">
-              {getTotalFilterCount() > 0 ? "No responses match filters" : "No responses yet"}
-            </h3>
+            <h3 className="font-semibold mb-2">No responses found</h3>
             <p className="text-muted-foreground">
-              {getTotalFilterCount() > 0 
-                ? "Try adjusting your filters to see more results"
-                : "Complete surveys to see your response history here"
+              {searchQuery || Object.values(filters).some(arr => arr.length > 0) || dateRange.from || dateRange.to
+                ? "No responses match your current filters"
+                : "You haven't completed any surveys yet"
               }
             </p>
-            {getTotalFilterCount() > 0 && (
-              <Button variant="outline" onClick={clearFilters} className="mt-4">
-                Clear all filters
-              </Button>
-            )}
           </div>
         )}
       </div>
