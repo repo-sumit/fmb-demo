@@ -21,7 +21,6 @@ const History: React.FC = () => {
     status: [] as string[]
   });
 
-  // Mock historical data with UDISE codes for In School surveys
   const historicalSurveys: Survey[] = [
     {
       id: 'SCH_2025_001',
@@ -68,8 +67,6 @@ const History: React.FC = () => {
     }
   ];
 
-  // filtering logic, handlers, etc.
-
   const filteredSurveys = historicalSurveys.filter(survey => {
     const matchesSearch = survey.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          survey.id.toLowerCase().includes(searchQuery.toLowerCase());
@@ -100,7 +97,13 @@ const History: React.FC = () => {
   };
 
   if (selectedSurvey) {
-    return <ViewResponse survey={selectedSurvey} onBack={() => setSelectedSurvey(null)} />;
+    return (
+      <ViewResponse 
+        surveyId={selectedSurvey.id} 
+        surveyName={selectedSurvey.name} 
+        onBack={() => setSelectedSurvey(null)} 
+      />
+    );
   }
 
   return (
