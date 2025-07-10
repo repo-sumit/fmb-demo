@@ -177,16 +177,10 @@ const MySurvey: React.FC = () => {
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <div className="flex-1">
-          {!isOnline && (
-            <div className="bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-sm font-medium inline-flex items-center">
-              You are offline
-            </div>
-          )}
-        </div>
-        <h1 className="display-l">My Surveys</h1>
-        <div className="flex-1 flex justify-end">
           <NetworkToggle />
         </div>
+        <h1 className="display-l">My Surveys</h1>
+        <div className="flex-1"></div>
       </div>
 
       {/* Search and Filter */}
@@ -207,7 +201,6 @@ const MySurvey: React.FC = () => {
         </FilterSheet>
       </div>
 
-      {/* Active filter chips */}
       {(filters.types.length > 0 || filters.access.length > 0) && (
         <div className="flex flex-wrap gap-2 mb-4">
           {[...filters.types, ...filters.access].map((filter, index) => (
