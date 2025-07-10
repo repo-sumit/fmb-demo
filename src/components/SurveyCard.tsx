@@ -4,7 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { Check, ArrowDown, Download, School } from 'lucide-react';
+import { Check, ArrowDown, Download, School, CheckCircle } from 'lucide-react';
 
 export interface Survey {
   id: string;
@@ -28,6 +28,7 @@ interface SurveyCardProps {
   onDownload?: (surveyId: string) => void;
   showAddButton?: boolean;
   isHistory?: boolean;
+  isDownloaded?: boolean;
 }
 
 const SurveyCard: React.FC<SurveyCardProps> = ({
@@ -38,7 +39,8 @@ const SurveyCard: React.FC<SurveyCardProps> = ({
   onView,
   onDownload,
   showAddButton = false,
-  isHistory = false
+  isHistory = false,
+  isDownloaded = false
 }) => {
   const [downloadProgress, setDownloadProgress] = useState(0);
   const [isDownloading, setIsDownloading] = useState(false);
@@ -64,7 +66,7 @@ const SurveyCard: React.FC<SurveyCardProps> = ({
   };
 
   const handleDownload = () => {
-    if (!onDownload) return;
+    if (!onDownload || isDownloaded) return;
     
     setIsDownloading(true);
     setDownloadProgress(0);
@@ -204,11 +206,20 @@ const SurveyCard: React.FC<SurveyCardProps> = ({
               <Button 
                 variant="outline" 
                 onClick={handleDownload}
-                disabled={isDownloading}
+                disabled={isDownloading || isDownloaded}
                 className="w-full"
               >
-                <Download size={16} className="mr-2" />
-                {isDownloading ? 'Downloading...' : 'Download for Offline'}
+                {isDownloaded ? (
+                  <>
+                    <CheckCircle size={16} className="mr-2 text-green-600" />
+                    Downloaded
+                  </>
+                ) : (
+                  <>
+                    <Download size={16} className="mr-2" />
+                    {isDownloading ? 'Downloading...' : 'Download for Offline'}
+                  </>
+                )}
               </Button>
             </div>
           )}

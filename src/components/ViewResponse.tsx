@@ -1,9 +1,10 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, MapPin, User, Calendar } from 'lucide-react';
+import { ArrowLeft, MapPin, User, Calendar, Download } from 'lucide-react';
+import { toast } from '@/hooks/use-toast';
+import { useNetwork } from '@/contexts/NetworkContext';
 
 interface ViewResponseProps {
   surveyId: string;
@@ -12,6 +13,8 @@ interface ViewResponseProps {
 }
 
 const ViewResponse: React.FC<ViewResponseProps> = ({ surveyId, surveyName, onBack }) => {
+  const { isOnline } = useNetwork();
+  
   // Sample response data
   const responseData = {
     surveyInfo: {
@@ -19,7 +22,8 @@ const ViewResponse: React.FC<ViewResponseProps> = ({ surveyId, surveyName, onBac
       name: surveyName,
       completedAt: '4 Jul 2025, 10:42 AM',
       submittedBy: 'Anita Sharma (ANT_123)',
-      location: 'Government Primary School, Village Rampur'
+      location: 'Government Primary School, Village Rampur',
+      udiseCode: '12345678901'
     },
     responses: [
       {
@@ -68,6 +72,30 @@ const ViewResponse: React.FC<ViewResponseProps> = ({ surveyId, surveyName, onBac
         scale: '1-5 (Very Dissatisfied to Very Satisfied)'
       }
     ]
+  };
+
+  const handleDownloadResponse = () => {
+    if (!isOnline) {
+      toast({
+        title: "Download Unavailable",
+        description: "You need to be online to download survey responses.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Simulate download
+    toast({
+      title: "Download Started",
+      description: "Preparing survey response for download...",
+    });
+
+    setTimeout(() => {
+      toast({
+        title: "Download Complete",
+        description: `${surveyName} response downloaded for ${responseData.surveyInfo.udiseCode}.`,
+      });
+    }, 1500);
   };
 
   const renderResponse = (response: any) => {
@@ -194,6 +222,20 @@ const ViewResponse: React.FC<ViewResponseProps> = ({ surveyId, surveyName, onBac
           </Card>
         ))}
       </div>
+
+      {/* Download Button - Only show in online mode */}
+      {isOnline && (
+        <div className="mt-6 mb-8">
+          <Button 
+            onClick={handleDownloadResponse}
+            className="w-full"
+            variant="outline"
+          >
+            <Download size={16} className="mr-2" />
+            Download Response
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

@@ -9,9 +9,11 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar } from '@/components/ui/calendar';
 import { Filter, Search, Calendar as CalendarIcon, ArrowLeft } from 'lucide-react';
 import { format } from 'date-fns';
+import { useNetwork } from '@/contexts/NetworkContext';
 
 const History: React.FC = () => {
   const navigate = useNavigate();
+  const { isOnline } = useNetwork();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSurvey, setSelectedSurvey] = useState<Survey | null>(null);
   const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>({});
@@ -67,7 +69,12 @@ const History: React.FC = () => {
     }
   ];
 
-  const filteredSurveys = historicalSurveys.filter(survey => {
+  // Filter surveys based on online/offline status
+  const availableSurveys = isOnline 
+    ? historicalSurveys 
+    : historicalSurveys.filter(survey => survey.status === 'pending');
+
+  const filteredSurveys = availableSurveys.filter(survey => {
     const matchesSearch = survey.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          survey.id.toLowerCase().includes(searchQuery.toLowerCase());
     
@@ -118,6 +125,11 @@ const History: React.FC = () => {
           <ArrowLeft size={20} />
         </Button>
         <h1 className="display-l">My Responses</h1>
+        {!isOnline && (
+          <div className="ml-auto bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-sm font-medium">
+            Offline - Sync Pending Only
+          </div>
+        )}
       </div>
 
       {/* Search, Date, and Filter */}
@@ -139,53 +151,57 @@ const History: React.FC = () => {
           </FilterSheet>
         </div>
 
-        {/* Date Range Picker */}
-        <div className="flex gap-2">
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="outline" className="flex-1 justify-start text-left font-normal">
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {dateRange.from ? format(dateRange.from, "MMM dd, yyyy") : "From date"}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                mode="single"
-                selected={dateRange.from}
-                onSelect={(date) => setDateRange(prev => ({ ...prev, from: date }))}
-                initialFocus
-              />
-            </PopoverContent>
-          </Popover>
+        {/* Date Range Picker - Only show when online */}
+        {isOnline && (
+          <>
+            <div className="flex gap-2">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" className="flex-1 justify-start text-left font-normal">
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {dateRange.from ? format(dateRange.from, "MMM dd, yyyy") : "From date"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={dateRange.from}
+                    onSelect={(date) => setDateRange(prev => ({ ...prev, from: date }))}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
 
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="outline" className="flex-1 justify-start text-left font-normal">
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {dateRange.to ? format(dateRange.to, "MMM dd, yyyy") : "To date"}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                mode="single"
-                selected={dateRange.to}
-                onSelect={(date) => setDateRange(prev => ({ ...prev, to: date }))}
-                initialFocus
-              />
-            </PopoverContent>
-          </Popover>
-        </div>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" className="flex-1 justify-start text-left font-normal">
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {dateRange.to ? format(dateRange.to, "MMM dd, yyyy") : "To date"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={dateRange.to}
+                    onSelect={(date) => setDateRange(prev => ({ ...prev, to: date }))}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
 
-        {/* Clear dates button */}
-        {(dateRange.from || dateRange.to) && (
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={() => setDateRange({})}
-            className="w-full"
-          >
-            Clear Date Filter
-          </Button>
+            {/* Clear dates button */}
+            {(dateRange.from || dateRange.to) && (
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => setDateRange({})}
+                className="w-full"
+              >
+                Clear Date Filter
+              </Button>
+            )}
+          </>
         )}
       </div>
 
@@ -218,7 +234,9 @@ const History: React.FC = () => {
             </div>
             <h3 className="font-semibold mb-2">No responses found</h3>
             <p className="text-muted-foreground">
-              {searchQuery || Object.values(filters).some(arr => arr.length > 0) || dateRange.from || dateRange.to
+              {!isOnline
+                ? "No sync pending responses available offline"
+                : searchQuery || Object.values(filters).some(arr => arr.length > 0) || dateRange.from || dateRange.to
                 ? "No responses match your current filters"
                 : "You haven't completed any surveys yet"
               }

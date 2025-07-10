@@ -1,17 +1,17 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import NetworkStatus from '@/components/NetworkStatus';
+import NetworkToggle from '@/components/NetworkToggle';
 import SurveyCard, { Survey } from '@/components/SurveyCard';
 import FilterSheet from '@/components/FilterSheet';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Filter, Search } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import { useNetwork } from '@/contexts/NetworkContext';
 
 const MySurvey: React.FC = () => {
   const navigate = useNavigate();
-  const [isOnline] = useState(navigator.onLine);
+  const { isOnline, downloadedSurveys, addDownloadedSurvey } = useNetwork();
   const [searchQuery, setSearchQuery] = useState('');
   const [filters, setFilters] = useState({
     types: [] as string[],
@@ -123,7 +123,12 @@ const MySurvey: React.FC = () => {
     }
   ];
 
-  const filteredSurveys = surveys.filter(survey => {
+  // Filter surveys based on online/offline status
+  const availableSurveys = isOnline 
+    ? surveys 
+    : surveys.filter(survey => downloadedSurveys.has(survey.id));
+
+  const filteredSurveys = availableSurveys.filter(survey => {
     const matchesSearch = survey.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          survey.id.toLowerCase().includes(searchQuery.toLowerCase());
     
@@ -159,6 +164,7 @@ const MySurvey: React.FC = () => {
 
     // Simulate download completion after 2 seconds
     setTimeout(() => {
+      addDownloadedSurvey(surveyId);
       toast({
         title: "Download Complete",
         description: `${survey.name} is ready for offline use`,
@@ -170,9 +176,17 @@ const MySurvey: React.FC = () => {
     <div className="pb-20 pt-4 px-4 min-h-screen bg-background">
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
-        <NetworkStatus isOnline={isOnline} />
+        <div className="flex-1">
+          {!isOnline && (
+            <div className="bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-sm font-medium inline-flex items-center">
+              You are offline
+            </div>
+          )}
+        </div>
         <h1 className="display-l">My Surveys</h1>
-        <div className="w-20" /> {/* Spacer for balance */}
+        <div className="flex-1 flex justify-end">
+          <NetworkToggle />
+        </div>
       </div>
 
       {/* Search and Filter */}
@@ -214,6 +228,7 @@ const MySurvey: React.FC = () => {
               onStart={handleStartSurvey}
               onResume={handleResumeSurvey}
               onDownload={handleDownloadSurvey}
+              isDownloaded={downloadedSurveys.has(survey.id)}
             />
           ))
         ) : (
@@ -223,7 +238,9 @@ const MySurvey: React.FC = () => {
             </div>
             <h3 className="font-semibold mb-2">No surveys found</h3>
             <p className="text-muted-foreground">
-              {searchQuery || Object.values(filters).some(arr => arr.length > 0)
+              {!isOnline && filteredSurveys.length === 0
+                ? "No downloaded surveys available offline"
+                : searchQuery || Object.values(filters).some(arr => arr.length > 0)
                 ? "No surveys match your current filters"
                 : "You haven't added any surveys yet"
               }

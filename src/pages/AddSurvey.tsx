@@ -1,18 +1,28 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import SurveyCard, { Survey } from '@/components/SurveyCard';
-import { Search, CheckCircle } from 'lucide-react';
+import { Search, CheckCircle, WifiOff } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import { useNetwork } from '@/contexts/NetworkContext';
 
 const AddSurvey: React.FC = () => {
   const navigate = useNavigate();
+  const { isOnline } = useNetwork();
   const [searchQuery, setSearchQuery] = useState('');
   const [addedSurveys, setAddedSurveys] = useState<Set<string>>(new Set());
 
   const handleAddSurvey = (surveyId: string) => {
+    if (!isOnline) {
+      toast({
+        title: "Connect to network to add a survey",
+        description: "You need to be online to add new surveys.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     // Simulate adding survey to user's list
     setAddedSurveys(prev => new Set([...prev, surveyId]));
     
@@ -76,6 +86,15 @@ const AddSurvey: React.FC = () => {
   };
 
   const handleSearch = () => {
+    if (!isOnline) {
+      toast({
+        title: "Connect to network to add a survey",
+        description: "You need to be online to search and add new surveys.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     if (!searchQuery.trim()) {
       toast({
         title: "Search Required",
@@ -107,6 +126,26 @@ const AddSurvey: React.FC = () => {
 
   const foundSurvey = searchQuery.trim() ? findSurveyById(searchQuery.trim()) : null;
 
+  if (!isOnline) {
+    return (
+      <div className="pb-20 pt-4 px-4 min-h-screen bg-background">
+        {/* Header */}
+        <h1 className="display-l mb-6 text-center">Add Survey</h1>
+
+        {/* Offline Message */}
+        <div className="flex flex-col items-center justify-center py-12">
+          <div className="w-24 h-24 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+            <WifiOff size={32} className="text-muted-foreground" />
+          </div>
+          <h3 className="font-semibold mb-2">You're Offline</h3>
+          <p className="text-muted-foreground text-center">
+            Connect to network to add a survey
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="pb-20 pt-4 px-4 min-h-screen bg-background">
       {/* Header */}
@@ -123,6 +162,7 @@ const AddSurvey: React.FC = () => {
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10"
               onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+              disabled={!isOnline}
             />
           </div>
         </div>

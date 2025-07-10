@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { NetworkProvider } from "@/contexts/NetworkContext";
 
 // Pages
 import Login from "./pages/Login";
@@ -50,64 +51,66 @@ const App = () => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            {/* Public routes */}
-            <Route path="/login" element={<Login />} />
-            
-            {/* Protected routes */}
-            <Route path="/" element={
-              <ProtectedRoute>
-                <AppLayout>
-                  <MySurvey />
-                </AppLayout>
-              </ProtectedRoute>
-            } />
-            
-            <Route path="/add-survey" element={
-              <ProtectedRoute>
-                <AppLayout>
-                  <AddSurvey />
-                </AppLayout>
-              </ProtectedRoute>
-            } />
-            
-            <Route path="/profile" element={
-              <ProtectedRoute>
-                <AppLayout>
-                  <Profile />
-                </AppLayout>
-              </ProtectedRoute>
-            } />
-            
-            <Route path="/history" element={
-              <ProtectedRoute>
-                <AppLayout>
-                  <History />
-                </AppLayout>
-              </ProtectedRoute>
-            } />
-            
-            <Route path="/udise-validation/:surveyId" element={
-              <ProtectedRoute>
-                <UdiseValidation />
-              </ProtectedRoute>
-            } />
-            
-            <Route path="/survey/:surveyId" element={
-              <ProtectedRoute>
-                <SurveyForm />
-              </ProtectedRoute>
-            } />
-            
-            {/* Catch-all route */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
+      <NetworkProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+              {/* Public routes */}
+              <Route path="/login" element={<Login />} />
+              
+              {/* Protected routes */}
+              <Route path="/" element={
+                <ProtectedRoute>
+                  <AppLayout>
+                    <MySurvey />
+                  </AppLayout>
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/add-survey" element={
+                <ProtectedRoute>
+                  <AppLayout>
+                    <AddSurvey />
+                  </AppLayout>
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/profile" element={
+                <ProtectedRoute>
+                  <AppLayout>
+                    <Profile />
+                  </AppLayout>
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/history" element={
+                <ProtectedRoute>
+                  <AppLayout>
+                    <History />
+                  </AppLayout>
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/udise-validation/:surveyId" element={
+                <ProtectedRoute>
+                  <UdiseValidation />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/survey/:surveyId" element={
+                <ProtectedRoute>
+                  <SurveyForm />
+                </ProtectedRoute>
+              } />
+              
+              {/* Catch-all route */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </TooltipProvider>
+      </NetworkProvider>
     </QueryClientProvider>
   );
 };
