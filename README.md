@@ -14,14 +14,10 @@ Admin and field roles are clearly separated, with offline capabilities, encrypte
 
 ## 👥 Users & Access
 
-- **Field User:**  
-  - Login with User ID (+ optional PIN)  
+- **User:**  
+  - Login with User ID   
   - See only their assigned surveys  
   - Download for offline, submit, view their history
-
-- **Admin:**  
-  - Manage user hierarchy, access, and parameters  
-  - Configure what each field user can access
 
 ---
 
@@ -29,7 +25,6 @@ Admin and field roles are clearly separated, with offline capabilities, encrypte
 
 ### 1. Authentication  
 - Secure login using User ID  
-- Optional PIN for extra security
 
 ### 2. **My Surveys**  
 - **Landing:** Paginated, filtered list of surveys  
