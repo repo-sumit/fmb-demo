@@ -82,7 +82,7 @@ Admin and field roles are clearly separated, with offline capabilities, encrypte
 - **Export:** Download response as PDF (online only)
 
 **Hosted on:**  
-[![Loveable](https://avatars.githubusercontent.com/u/131767289?s=48)](https://lovable.app) – All-in-one prototyping & hosting for rapid, secure deployments.
+[Loveable](https://lovable.app) – All-in-one prototyping & hosting for rapid, secure deployments.
 
 ---
 
@@ -134,7 +134,7 @@ Admin and field roles are clearly separated, with offline capabilities, encrypte
 
 ### 1. Login & Authentication
 
-* User enters ID, optional PIN
+* User enters ID
 * Authenticated session scoped to their hierarchy
 
 ### 2. Survey List & Download
