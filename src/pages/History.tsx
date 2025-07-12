@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import SurveyCard from '@/components/SurveyCard';
+import SurveyCard, { Survey } from '@/components/SurveyCard';
 import FilterSheet from '@/components/FilterSheet';
 import ViewResponse from '@/components/ViewResponse';
 import { Button } from '@/components/ui/button';
@@ -10,18 +10,6 @@ import { Calendar } from '@/components/ui/calendar';
 import { Filter, Search, Calendar as CalendarIcon, ArrowLeft } from 'lucide-react';
 import { format } from 'date-fns';
 import { useNetwork } from '@/contexts/NetworkContext';
-
-interface Survey {
-  id: string;
-  name: string;
-  description: string;
-  type: 'Open' | 'In School';
-  access: 'Public' | 'Private';
-  languages: string[];
-  status?: 'completed' | 'synced' | 'pending';
-  lastModified: string;
-  udiseCode?: string;
-}
 
 const History: React.FC = () => {
   const navigate = useNavigate();
@@ -235,8 +223,7 @@ const History: React.FC = () => {
             <SurveyCard
               key={survey.id}
               survey={survey}
-              onAction={handleViewResponse}
-              actionLabel="View Response"
+              onView={handleViewResponse}
               isHistory={true}
             />
           ))

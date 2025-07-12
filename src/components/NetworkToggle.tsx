@@ -9,20 +9,20 @@ const NetworkToggle: React.FC = () => {
   const { isOnline, toggleNetwork } = useNetwork();
 
   return (
-    <div className="flex items-center space-x-2 glass-card rounded-full px-3 py-2 shadow-lg hover-glow border border-purple-300/20">
+    <div className="flex items-center space-x-2 bg-white rounded-full px-2 py-1 shadow-sm border">
       {isOnline ? (
-        <Wifi size={14} className="text-green-400 pulse-slow" />
+        <Wifi size={14} className="text-green-600" />
       ) : (
-        <WifiOff size={14} className="text-red-400 pulse-slow" />
+        <WifiOff size={14} className="text-red-600" />
       )}
-      <Label htmlFor="network-toggle" className="text-xs font-medium cursor-pointer gradient-text">
+      <Label htmlFor="network-toggle" className="text-xs font-medium cursor-pointer">
         {isOnline ? 'Online' : 'Offline'}
       </Label>
       <Switch
         id="network-toggle"
         checked={isOnline}
         onCheckedChange={toggleNetwork}
-        className="scale-75 data-[state=checked]:bg-gradient-to-r data-[state=checked]:from-green-500 data-[state=checked]:to-emerald-600"
+        className="scale-75"
       />
     </div>
   );

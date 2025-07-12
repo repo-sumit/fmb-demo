@@ -12,14 +12,13 @@ interface FilterOptions {
 }
 
 interface FilterSheetProps {
-  filters?: FilterOptions;
+  filters: FilterOptions;
   onFiltersChange: (filters: FilterOptions) => void;
   children: React.ReactNode;
 }
 
 const FilterSheet: React.FC<FilterSheetProps> = ({ filters, onFiltersChange, children }) => {
-  const defaultFilters: FilterOptions = { types: [], access: [], status: [] };
-  const [localFilters, setLocalFilters] = useState(filters || defaultFilters);
+  const [localFilters, setLocalFilters] = useState(filters);
 
   const filterSections = [
     {
@@ -35,24 +34,21 @@ const FilterSheet: React.FC<FilterSheetProps> = ({ filters, onFiltersChange, chi
     {
       title: 'Status',
       key: 'status' as keyof FilterOptions,
-      options: ['completed', 'synced', 'pending', 'active', 'draft']
+      options: ['Completed', 'In Progress', 'Not Started']
     }
   ];
 
   const handleFilterToggle = (section: keyof FilterOptions, option: string) => {
-    setLocalFilters(prev => {
-      const currentFilters = prev || defaultFilters;
-      return {
-        ...currentFilters,
-        [section]: currentFilters[section].includes(option)
-          ? currentFilters[section].filter(item => item !== option)
-          : [...currentFilters[section], option]
-      };
-    });
+    setLocalFilters(prev => ({
+      ...prev,
+      [section]: prev[section].includes(option)
+        ? prev[section].filter(item => item !== option)
+        : [...prev[section], option]
+    }));
   };
 
   const applyFilters = () => {
-    onFiltersChange(localFilters || defaultFilters);
+    onFiltersChange(localFilters);
   };
 
   const clearFilters = () => {
@@ -62,8 +58,7 @@ const FilterSheet: React.FC<FilterSheetProps> = ({ filters, onFiltersChange, chi
   };
 
   const getTotalFilterCount = () => {
-    if (!localFilters) return 0;
-    return Object.values(localFilters).reduce((sum, arr) => sum + (arr?.length || 0), 0);
+    return Object.values(localFilters).reduce((sum, arr) => sum + arr.length, 0);
   };
 
   return (
@@ -92,12 +87,12 @@ const FilterSheet: React.FC<FilterSheetProps> = ({ filters, onFiltersChange, chi
                   <div key={option} className="flex items-center space-x-2">
                     <Checkbox
                       id={`${section.key}-${option}`}
-                      checked={localFilters?.[section.key]?.includes(option) || false}
+                      checked={localFilters[section.key].includes(option)}
                       onCheckedChange={() => handleFilterToggle(section.key, option)}
                     />
                     <label
                       htmlFor={`${section.key}-${option}`}
-                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 capitalize"
+                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                     >
                       {option}
                     </label>
