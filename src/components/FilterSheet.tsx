@@ -12,13 +12,14 @@ interface FilterOptions {
 }
 
 interface FilterSheetProps {
-  filters: FilterOptions;
+  filters?: FilterOptions;
   onFiltersChange: (filters: FilterOptions) => void;
   children: React.ReactNode;
 }
 
 const FilterSheet: React.FC<FilterSheetProps> = ({ filters, onFiltersChange, children }) => {
-  const [localFilters, setLocalFilters] = useState(filters);
+  const defaultFilters: FilterOptions = { types: [], access: [], status: [] };
+  const [localFilters, setLocalFilters] = useState(filters || defaultFilters);
 
   const filterSections = [
     {
@@ -39,16 +40,19 @@ const FilterSheet: React.FC<FilterSheetProps> = ({ filters, onFiltersChange, chi
   ];
 
   const handleFilterToggle = (section: keyof FilterOptions, option: string) => {
-    setLocalFilters(prev => ({
-      ...prev,
-      [section]: prev[section].includes(option)
-        ? prev[section].filter(item => item !== option)
-        : [...prev[section], option]
-    }));
+    setLocalFilters(prev => {
+      const currentFilters = prev || defaultFilters;
+      return {
+        ...currentFilters,
+        [section]: currentFilters[section].includes(option)
+          ? currentFilters[section].filter(item => item !== option)
+          : [...currentFilters[section], option]
+      };
+    });
   };
 
   const applyFilters = () => {
-    onFiltersChange(localFilters);
+    onFiltersChange(localFilters || defaultFilters);
   };
 
   const clearFilters = () => {
@@ -58,7 +62,8 @@ const FilterSheet: React.FC<FilterSheetProps> = ({ filters, onFiltersChange, chi
   };
 
   const getTotalFilterCount = () => {
-    return Object.values(localFilters).reduce((sum, arr) => sum + arr.length, 0);
+    if (!localFilters) return 0;
+    return Object.values(localFilters).reduce((sum, arr) => sum + (arr?.length || 0), 0);
   };
 
   return (
@@ -87,7 +92,7 @@ const FilterSheet: React.FC<FilterSheetProps> = ({ filters, onFiltersChange, chi
                   <div key={option} className="flex items-center space-x-2">
                     <Checkbox
                       id={`${section.key}-${option}`}
-                      checked={localFilters[section.key].includes(option)}
+                      checked={localFilters?.[section.key]?.includes(option) || false}
                       onCheckedChange={() => handleFilterToggle(section.key, option)}
                     />
                     <label
