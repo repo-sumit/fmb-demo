@@ -1,6 +1,6 @@
 # 🌟 FMB Mini-App (Offline) – Prototype
 
-[Live Prototype on Loveable ➡️](https://fmb-demo.lovable.app/)  
+[Live Prototype](https://fmb-demo.lovable.app/)  
 _User: `demo` | School UDISE: `12345678901`_
 
 ---
@@ -119,7 +119,7 @@ Admin and field roles are clearly separated, with offline capabilities, encrypte
 2. **Run Locally**
 
    ```sh
-   npm start
+   npm run dev
    ```
 3. **Deploy on Loveable**
 
