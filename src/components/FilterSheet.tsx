@@ -35,7 +35,7 @@ const FilterSheet: React.FC<FilterSheetProps> = ({ filters, onFiltersChange, chi
     {
       title: 'Status',
       key: 'status' as keyof FilterOptions,
-      options: ['Completed', 'In Progress', 'Not Started']
+      options: ['completed', 'synced', 'pending', 'active', 'draft']
     }
   ];
 
@@ -97,7 +97,7 @@ const FilterSheet: React.FC<FilterSheetProps> = ({ filters, onFiltersChange, chi
                     />
                     <label
                       htmlFor={`${section.key}-${option}`}
-                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 capitalize"
                     >
                       {option}
                     </label>

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -29,7 +28,11 @@ const MySurvey: React.FC = () => {
   const navigate = useNavigate();
   const { isOnline } = useNetwork();
   const [searchQuery, setSearchQuery] = useState('');
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [filters, setFilters] = useState({
+    types: [] as string[],
+    access: [] as string[],
+    status: [] as string[]
+  });
   const [surveys, setSurveys] = useState<Survey[]>([
     {
       id: '1',
@@ -152,14 +155,14 @@ const MySurvey: React.FC = () => {
                 className="pl-10 glass-card border-purple-300/20 focus:border-purple-400 hover-glow"
               />
             </div>
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => setIsFilterOpen(true)}
-              className="glass-card border-purple-300/20 hover-glow"
+            <FilterSheet 
+              filters={filters} 
+              onFiltersChange={setFilters}
             >
-              <Filter className="w-4 h-4" />
-            </Button>
+              <Button variant="outline" size="icon" className="glass-card border-purple-300/20 hover-glow">
+                <Filter className="w-4 h-4" />
+              </Button>
+            </FilterSheet>
           </div>
 
           {/* Stats cards */}
@@ -230,8 +233,6 @@ const MySurvey: React.FC = () => {
             <Plus className="w-6 h-6" />
           </Button>
         )}
-
-        <FilterSheet isOpen={isFilterOpen} onClose={() => setIsFilterOpen(false)} />
       </div>
     </div>
   );
