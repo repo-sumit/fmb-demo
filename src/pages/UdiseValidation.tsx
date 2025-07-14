@@ -68,9 +68,9 @@ const UdiseValidation: React.FC = () => {
 
   const handleProceed = () => {
     if (isValidated && schoolInfo) {
-      // Store school info and proceed to survey
+      // Store school info and proceed to language selection
       localStorage.setItem(`school_${surveyId}`, JSON.stringify(schoolInfo));
-      navigate(`/survey/${surveyId}`);
+      navigate(`/survey-language/${surveyId}`);
     }
   };
 

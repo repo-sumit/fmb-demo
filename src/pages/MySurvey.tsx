@@ -144,7 +144,8 @@ const MySurvey: React.FC = () => {
       // Redirect to UDISE validation
       navigate(`/udise-validation/${surveyId}`);
     } else {
-      navigate(`/survey/${surveyId}`);
+      // Navigate to language selection first
+      navigate(`/survey-language/${surveyId}`);
     }
   };
 

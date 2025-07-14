@@ -15,6 +15,7 @@ import Profile from "./pages/Profile";
 import SurveyForm from "./pages/SurveyForm";
 import History from "./pages/History";
 import UdiseValidation from "./pages/UdiseValidation";
+import SurveyLanguageSelection from "./pages/SurveyLanguageSelection";
 import NotFound from "./pages/NotFound";
 
 // Components
@@ -96,6 +97,12 @@ const App = () => {
               <Route path="/udise-validation/:surveyId" element={
                 <ProtectedRoute>
                   <UdiseValidation />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/survey-language/:surveyId" element={
+                <ProtectedRoute>
+                  <SurveyLanguageSelection />
                 </ProtectedRoute>
               } />
               

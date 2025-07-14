@@ -42,6 +42,7 @@ const SurveyForm: React.FC = () => {
   const [responses, setResponses] = useState<Record<string, any>>({});
   const [showDiscardDialog, setShowDiscardDialog] = useState(false);
   const [udiseCode, setUdiseCode] = useState('');
+  const [selectedLanguage, setSelectedLanguage] = useState<string>('');
 
   // Comprehensive demo survey with all question types
   const survey = {
@@ -150,6 +151,14 @@ const SurveyForm: React.FC = () => {
 
   const totalQuestions = survey.questions.length;
   const progress = ((currentQuestion + 1) / totalQuestions) * 100;
+
+  // Load selected language on component mount
+  useEffect(() => {
+    const language = localStorage.getItem(`survey_${surveyId}_language`);
+    if (language) {
+      setSelectedLanguage(language);
+    }
+  }, [surveyId]);
 
   // Auto-save responses
   useEffect(() => {
@@ -606,6 +615,11 @@ const SurveyForm: React.FC = () => {
               Question {currentQuestion + 1} of {totalQuestions}
             </p>
             <h1 className="font-semibold">{survey.name}</h1>
+            {selectedLanguage && (
+              <p className="text-xs text-muted-foreground mt-1">
+                Language: {selectedLanguage}
+              </p>
+            )}
           </div>
           <Button
             variant="ghost"
