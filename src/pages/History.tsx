@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import SurveyCard, { Survey } from '@/components/SurveyCard';
 import FilterSheet from '@/components/FilterSheet';
 import ViewResponse from '@/components/ViewResponse';
+import OfflineBanner from '@/components/OfflineBanner';
+import ConflictDialog from '@/components/ConflictDialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -10,6 +12,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Filter, Search, Calendar as CalendarIcon, ArrowLeft } from 'lucide-react';
 import { format } from 'date-fns';
 import { useNetwork } from '@/contexts/NetworkContext';
+import { toast } from '@/hooks/use-toast';
 
 const History: React.FC = () => {
   const navigate = useNavigate();
@@ -22,6 +25,8 @@ const History: React.FC = () => {
     access: [] as string[],
     status: [] as string[]
   });
+  const [showConflictDialog, setShowConflictDialog] = useState(false);
+  const [conflictSurvey, setConflictSurvey] = useState<Survey | null>(null);
 
   const historicalSurveys: Survey[] = [
     {
@@ -31,7 +36,7 @@ const History: React.FC = () => {
       type: 'In School',
       access: 'Public',
       languages: ['Hindi', 'English'],
-      status: 'completed',
+      status: 'pending',
       lastModified: '2025-01-05',
       udiseCode: '12345678901'
     },
@@ -103,6 +108,53 @@ const History: React.FC = () => {
     }
   };
 
+  const handleSync = (surveyId: string) => {
+    const survey = historicalSurveys.find(s => s.id === surveyId);
+    if (!survey) return;
+
+    // Check if this is a school survey that might have conflicts
+    if (survey.type === 'In School' && survey.udiseCode) {
+      // Simulate checking for existing sync
+      const hasConflict = Math.random() > 0.7; // 30% chance of conflict for demo
+      
+      if (hasConflict) {
+        setConflictSurvey(survey);
+        setShowConflictDialog(true);
+        return;
+      }
+    }
+
+    // Normal sync process
+    handleSyncResponse(surveyId);
+  };
+
+  const handleSyncResponse = (surveyId: string) => {
+    // Update the survey status to synced
+    const surveyIndex = historicalSurveys.findIndex(s => s.id === surveyId);
+    if (surveyIndex !== -1) {
+      historicalSurveys[surveyIndex].status = 'synced';
+      historicalSurveys[surveyIndex].lastModified = new Date().toISOString().split('T')[0];
+    }
+
+    toast({
+      title: "Sync Successful",
+      description: "Response has been synced to the server.",
+    });
+  };
+
+  const handleConflictSubmitAgain = () => {
+    if (conflictSurvey) {
+      handleSyncResponse(conflictSurvey.id);
+    }
+    setShowConflictDialog(false);
+    setConflictSurvey(null);
+  };
+
+  const handleConflictCancel = () => {
+    setShowConflictDialog(false);
+    setConflictSurvey(null);
+  };
+
   if (selectedSurvey) {
     return (
       <ViewResponse 
@@ -115,6 +167,9 @@ const History: React.FC = () => {
 
   return (
     <div className="pb-20 pt-4 px-4 min-h-screen bg-background">
+      {/* Offline Banner */}
+      {!isOnline && <OfflineBanner />}
+      
       {/* Header */}
       <div className="flex items-center gap-4 mb-6">
         <Button 
@@ -224,6 +279,7 @@ const History: React.FC = () => {
               key={survey.id}
               survey={survey}
               onView={handleViewResponse}
+              onSync={handleSync}
               isHistory={true}
             />
           ))
@@ -244,6 +300,19 @@ const History: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Conflict Dialog */}
+      {conflictSurvey && (
+        <ConflictDialog
+          isOpen={showConflictDialog}
+          onClose={() => setShowConflictDialog(false)}
+          onSubmitAgain={handleConflictSubmitAgain}
+          onCancel={handleConflictCancel}
+          schoolName={conflictSurvey.name}
+          udiseCode={conflictSurvey.udiseCode || ''}
+          previousSyncDate="2025-01-04, 2:30 PM"
+        />
+      )}
     </div>
   );
 };

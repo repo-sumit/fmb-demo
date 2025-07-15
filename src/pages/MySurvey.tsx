@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import NetworkToggle from '@/components/NetworkToggle';
 import SurveyCard, { Survey } from '@/components/SurveyCard';
 import FilterSheet from '@/components/FilterSheet';
+import OfflineBanner from '@/components/OfflineBanner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Filter, Search } from 'lucide-react';
@@ -175,6 +176,9 @@ const MySurvey: React.FC = () => {
 
   return (
     <div className="pb-20 pt-4 px-4 min-h-screen bg-background">
+      {/* Offline Banner */}
+      {!isOnline && <OfflineBanner />}
+      
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <div className="flex-1">

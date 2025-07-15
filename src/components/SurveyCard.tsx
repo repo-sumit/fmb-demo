@@ -4,7 +4,9 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { Check, ArrowDown, Download, School, CheckCircle } from 'lucide-react';
+import { Check, ArrowDown, Download, School, CheckCircle, RefreshCw } from 'lucide-react';
+import { useNetwork } from '@/contexts/NetworkContext';
+import { toast } from '@/hooks/use-toast';
 
 export interface Survey {
   id: string;
@@ -13,7 +15,7 @@ export interface Survey {
   type: 'Open' | 'In School';
   access: 'Public' | 'Private';
   languages: string[];
-  status?: 'completed' | 'pending' | 'synced' | 'sync-error';
+  status?: 'pending' | 'synced' | 'sync-error';
   lastModified?: string;
   progress?: number;
   udiseCode?: string;
@@ -26,6 +28,7 @@ interface SurveyCardProps {
   onAdd?: (surveyId: string) => void;
   onView?: (surveyId: string) => void;
   onDownload?: (surveyId: string) => void;
+  onSync?: (surveyId: string) => void;
   showAddButton?: boolean;
   isHistory?: boolean;
   isDownloaded?: boolean;
@@ -38,20 +41,22 @@ const SurveyCard: React.FC<SurveyCardProps> = ({
   onAdd,
   onView,
   onDownload,
+  onSync,
   showAddButton = false,
   isHistory = false,
   isDownloaded = false
 }) => {
+  const { isOnline } = useNetwork();
   const [downloadProgress, setDownloadProgress] = useState(0);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
 
   const getStatusBadge = () => {
     if (!survey.status) return null;
 
     const statusConfig = {
-      completed: { label: 'Completed', className: 'bg-blue-100 text-blue-800' },
-      pending: { label: 'Pending Sync', className: 'bg-yellow-100 text-yellow-800', icon: <ArrowDown size={12} /> },
-      synced: { label: 'Synced', className: 'bg-green-100 text-green-800', icon: <Check size={12} /> },
+      pending: { label: 'Sync Pending', className: 'bg-yellow-100 text-yellow-800', icon: <ArrowDown size={12} /> },
+      synced: { label: 'Sync Completed', className: 'bg-green-100 text-green-800', icon: <Check size={12} /> },
       'sync-error': { label: 'Sync Error', className: 'bg-red-100 text-red-800' }
     };
 
@@ -85,12 +90,39 @@ const SurveyCard: React.FC<SurveyCardProps> = ({
     }, 200);
   };
 
+  const handleSync = async () => {
+    if (!isOnline || !onSync) return;
+    
+    setIsSyncing(true);
+    
+    try {
+      // Simulate sync process
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      onSync(survey.id);
+      
+      toast({
+        title: "Sync Successful",
+        description: "Response has been synced to the server.",
+      });
+    } catch (error) {
+      toast({
+        title: "Sync Failed",
+        description: "Failed to sync response. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
   const getActionButton = () => {
     if (showAddButton) {
       return (
         <Button 
           onClick={() => onAdd?.(survey.id)}
           className="w-full mt-4"
+          disabled={!isOnline}
         >
           Add Survey
         </Button>
@@ -99,12 +131,36 @@ const SurveyCard: React.FC<SurveyCardProps> = ({
 
     if (isHistory) {
       return (
-        <Button 
-          onClick={() => onView?.(survey.id)}
-          className="w-full mt-4"
-        >
-          View Response
-        </Button>
+        <div className="mt-4 space-y-2">
+          <Button 
+            onClick={() => onView?.(survey.id)}
+            className="w-full"
+          >
+            View Response
+          </Button>
+          
+          {/* Sync Now button for pending responses */}
+          {survey.status === 'pending' && isOnline && (
+            <Button 
+              onClick={handleSync}
+              disabled={isSyncing}
+              className="w-full"
+              variant="outline"
+            >
+              {isSyncing ? (
+                <>
+                  <RefreshCw size={16} className="mr-2 animate-spin" />
+                  Syncing...
+                </>
+              ) : (
+                <>
+                  <RefreshCw size={16} className="mr-2" />
+                  Sync Now
+                </>
+              )}
+            </Button>
+          )}
+        </div>
       );
     }
 

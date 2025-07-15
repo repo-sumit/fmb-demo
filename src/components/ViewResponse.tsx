@@ -2,7 +2,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, MapPin, User, Calendar, Download } from 'lucide-react';
+import { ArrowLeft, MapPin, User, Calendar, Download, Hash, School } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { useNetwork } from '@/contexts/NetworkContext';
 
@@ -20,10 +20,10 @@ const ViewResponse: React.FC<ViewResponseProps> = ({ surveyId, surveyName, onBac
     surveyInfo: {
       id: surveyId,
       name: surveyName,
-      completedAt: '4 Jul 2025, 10:42 AM',
-      submittedBy: 'Anita Sharma (ANT_123)',
-      location: 'Government Primary School, Village Rampur',
-      udiseCode: '12345678901'
+      submittedTimestamp: '4 Jul 2025, 10:42 AM',
+      syncedTimestamp: '4 Jul 2025, 10:45 AM',
+      udiseCode: '12345678901',
+      syncStatus: 'Sync Successful'
     },
     responses: [
       {
@@ -183,20 +183,24 @@ const ViewResponse: React.FC<ViewResponseProps> = ({ surveyId, surveyName, onBac
           <CardTitle className="text-lg">{responseData.surveyInfo.name}</CardTitle>
           <div className="space-y-2 text-sm text-muted-foreground">
             <div className="flex items-center space-x-2">
+              <Hash size={14} />
+              <span>Survey ID: {responseData.surveyInfo.id}</span>
+            </div>
+            <div className="flex items-center space-x-2">
               <Calendar size={14} />
-              <span>Completed: {responseData.surveyInfo.completedAt}</span>
+              <span>Submitted: {responseData.surveyInfo.submittedTimestamp}</span>
             </div>
             <div className="flex items-center space-x-2">
-              <User size={14} />
-              <span>By: {responseData.surveyInfo.submittedBy}</span>
+              <Calendar size={14} />
+              <span>Synced: {responseData.surveyInfo.syncedTimestamp}</span>
             </div>
             <div className="flex items-center space-x-2">
-              <MapPin size={14} />
-              <span>{responseData.surveyInfo.location}</span>
+              <School size={14} />
+              <span>School UDISE: {responseData.surveyInfo.udiseCode}</span>
             </div>
           </div>
           <Badge className="w-fit bg-green-100 text-green-800">
-            Synced
+            {responseData.surveyInfo.syncStatus}
           </Badge>
         </CardHeader>
       </Card>

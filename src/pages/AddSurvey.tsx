@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import SurveyCard, { Survey } from '@/components/SurveyCard';
+import OfflineBanner from '@/components/OfflineBanner';
 import { Search, CheckCircle, WifiOff } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { useNetwork } from '@/contexts/NetworkContext';
@@ -148,6 +149,9 @@ const AddSurvey: React.FC = () => {
 
   return (
     <div className="pb-20 pt-4 px-4 min-h-screen bg-background">
+      {/* Offline Banner */}
+      {!isOnline && <OfflineBanner />}
+      
       {/* Header */}
       <h1 className="display-l mb-6 text-center">Add Survey</h1>
 
