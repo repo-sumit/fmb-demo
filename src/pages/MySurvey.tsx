@@ -179,13 +179,9 @@ const MySurvey: React.FC = () => {
       {/* Offline Banner */}
       {!isOnline && <OfflineBanner />}
       
-      {/* Header */}
-      <div className="flex justify-between items-center mb-6">
-        <div className="flex-1">
-          <NetworkToggle />
-        </div>
-        <h1 className="display-l">My Surveys</h1>
-        <div className="flex-1"></div>
+      {/* Network Toggle */}
+      <div className="mb-6">
+        <NetworkToggle />
       </div>
 
       {/* Search and Filter */}

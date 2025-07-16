@@ -1,44 +1,43 @@
-
 import React, { useState } from 'react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 
-interface FilterOptions {
+interface ResponseFilterOptions {
   types: string[];
   access: string[];
-  status: string[];
+  syncStatus: string[];
 }
 
-interface FilterSheetProps {
-  filters: FilterOptions;
-  onFiltersChange: (filters: FilterOptions) => void;
+interface ResponseFilterSheetProps {
+  filters: ResponseFilterOptions;
+  onFiltersChange: (filters: ResponseFilterOptions) => void;
   children: React.ReactNode;
 }
 
-const FilterSheet: React.FC<FilterSheetProps> = ({ filters, onFiltersChange, children }) => {
+const ResponseFilterSheet: React.FC<ResponseFilterSheetProps> = ({ filters, onFiltersChange, children }) => {
   const [localFilters, setLocalFilters] = useState(filters);
 
   const filterSections = [
     {
       title: 'Type',
-      key: 'types' as keyof FilterOptions,
+      key: 'types' as keyof ResponseFilterOptions,
       options: ['Open', 'In School']
     },
     {
       title: 'Access',
-      key: 'access' as keyof FilterOptions,
+      key: 'access' as keyof ResponseFilterOptions,
       options: ['Public', 'Private']
     },
     {
-      title: 'Status',
-      key: 'status' as keyof FilterOptions,
-      options: ['In Progress', 'Not Started']
+      title: 'Sync Status',
+      key: 'syncStatus' as keyof ResponseFilterOptions,
+      options: ['Sync Pending', 'Sync Completed']
     }
   ];
 
-  const handleFilterToggle = (section: keyof FilterOptions, option: string) => {
+  const handleFilterToggle = (section: keyof ResponseFilterOptions, option: string) => {
     setLocalFilters(prev => ({
       ...prev,
       [section]: prev[section].includes(option)
@@ -52,7 +51,7 @@ const FilterSheet: React.FC<FilterSheetProps> = ({ filters, onFiltersChange, chi
   };
 
   const clearFilters = () => {
-    const emptyFilters = { types: [], access: [], status: [] };
+    const emptyFilters = { types: [], access: [], syncStatus: [] };
     setLocalFilters(emptyFilters);
     onFiltersChange(emptyFilters);
   };
@@ -75,7 +74,7 @@ const FilterSheet: React.FC<FilterSheetProps> = ({ filters, onFiltersChange, chi
       </SheetTrigger>
       <SheetContent side="bottom" className="h-[80vh]">
         <SheetHeader>
-          <SheetTitle>Filter Surveys</SheetTitle>
+          <SheetTitle>Filter Responses</SheetTitle>
         </SheetHeader>
         
         <div className="mt-6 space-y-6">
@@ -116,4 +115,4 @@ const FilterSheet: React.FC<FilterSheetProps> = ({ filters, onFiltersChange, chi
   );
 };
 
-export default FilterSheet;
+export default ResponseFilterSheet;

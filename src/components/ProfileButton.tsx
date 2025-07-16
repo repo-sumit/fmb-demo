@@ -13,7 +13,7 @@ const ProfileButton: React.FC = () => {
         variant="ghost"
         size="icon"
         onClick={() => setIsModalOpen(true)}
-        className="fixed top-4 right-4 z-40 w-10 h-10 bg-primary/10 hover:bg-primary/20"
+        className="w-10 h-10 bg-primary/10 hover:bg-primary/20"
       >
         <User size={18} className="text-primary" />
       </Button>

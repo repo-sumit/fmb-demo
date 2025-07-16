@@ -20,7 +20,7 @@ import NotFound from "./pages/NotFound";
 
 // Components
 import BottomNavigation from "./components/BottomNavigation";
-import ProfileButton from "./components/ProfileButton";
+import Header from "./components/Header";
 
 const queryClient = new QueryClient();
 
@@ -34,7 +34,7 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
 const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
     <div className="min-h-screen bg-background">
-      <ProfileButton />
+      <Header />
       {children}
       <BottomNavigation />
     </div>

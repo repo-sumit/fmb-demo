@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SurveyCard, { Survey } from '@/components/SurveyCard';
-import FilterSheet from '@/components/FilterSheet';
+import ResponseFilterSheet from '@/components/ResponseFilterSheet';
 import ViewResponse from '@/components/ViewResponse';
 import OfflineBanner from '@/components/OfflineBanner';
 import ConflictDialog from '@/components/ConflictDialog';
@@ -23,7 +23,7 @@ const History: React.FC = () => {
   const [filters, setFilters] = useState({
     types: [] as string[],
     access: [] as string[],
-    status: [] as string[]
+    syncStatus: [] as string[]
   });
   const [showConflictDialog, setShowConflictDialog] = useState(false);
   const [conflictSurvey, setConflictSurvey] = useState<Survey | null>(null);
@@ -85,7 +85,10 @@ const History: React.FC = () => {
     
     const matchesType = filters.types.length === 0 || filters.types.includes(survey.type);
     const matchesAccess = filters.access.length === 0 || filters.access.includes(survey.access);
-    const matchesStatus = filters.status.length === 0 || filters.status.includes(survey.status || '');
+    
+    // Map sync status for filtering
+    const syncStatus = survey.status === 'pending' ? 'Sync Pending' : 'Sync Completed';
+    const matchesSyncStatus = filters.syncStatus.length === 0 || filters.syncStatus.includes(syncStatus);
     
     // Date filtering
     let matchesDate = true;
@@ -98,7 +101,7 @@ const History: React.FC = () => {
       matchesDate = matchesDate && surveyDate <= dateRange.to;
     }
     
-    return matchesSearch && matchesType && matchesAccess && matchesStatus && matchesDate;
+    return matchesSearch && matchesType && matchesAccess && matchesSyncStatus && matchesDate;
   });
 
   const handleViewResponse = (surveyId: string) => {
@@ -170,22 +173,6 @@ const History: React.FC = () => {
       {/* Offline Banner */}
       {!isOnline && <OfflineBanner />}
       
-      {/* Header */}
-      <div className="flex items-center gap-4 mb-6">
-        <Button 
-          variant="ghost" 
-          size="icon"
-          onClick={() => navigate(-1)}
-        >
-          <ArrowLeft size={20} />
-        </Button>
-        <h1 className="display-l">My Responses</h1>
-        {!isOnline && (
-          <div className="ml-auto bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-sm font-medium">
-            Offline - Sync Pending Only
-          </div>
-        )}
-      </div>
 
       {/* Search, Date, and Filter */}
       <div className="space-y-3 mb-6">
@@ -199,11 +186,11 @@ const History: React.FC = () => {
               className="pl-10"
             />
           </div>
-          <FilterSheet filters={filters} onFiltersChange={setFilters}>
+          <ResponseFilterSheet filters={filters} onFiltersChange={setFilters}>
             <Button variant="outline" size="icon" className="tap-target">
               <Filter size={16} />
             </Button>
-          </FilterSheet>
+          </ResponseFilterSheet>
         </div>
 
         {/* Date Range Picker - Only show when online */}
@@ -261,9 +248,9 @@ const History: React.FC = () => {
       </div>
 
       {/* Active filter chips */}
-      {(filters.types.length > 0 || filters.access.length > 0 || filters.status.length > 0) && (
+      {(filters.types.length > 0 || filters.access.length > 0 || filters.syncStatus.length > 0) && (
         <div className="flex flex-wrap gap-2 mb-4">
-          {[...filters.types, ...filters.access, ...filters.status].map((filter, index) => (
+          {[...filters.types, ...filters.access, ...filters.syncStatus].map((filter, index) => (
             <div key={index} className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm">
               {filter}
             </div>

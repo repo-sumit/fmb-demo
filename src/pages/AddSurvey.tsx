@@ -130,8 +130,6 @@ const AddSurvey: React.FC = () => {
   if (!isOnline) {
     return (
       <div className="pb-20 pt-4 px-4 min-h-screen bg-background">
-        {/* Header */}
-        <h1 className="display-l mb-6 text-center">Add Survey</h1>
 
         {/* Offline Message */}
         <div className="flex flex-col items-center justify-center py-12">
@@ -152,8 +150,6 @@ const AddSurvey: React.FC = () => {
       {/* Offline Banner */}
       {!isOnline && <OfflineBanner />}
       
-      {/* Header */}
-      <h1 className="display-l mb-6 text-center">Add Survey</h1>
 
       {/* Search Section */}
       <div className="mb-6 space-y-4">
