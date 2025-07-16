@@ -117,15 +117,16 @@ const LanguageSelection: React.FC<LanguageSelectionProps> = ({
       </div>
 
       {/* Continue Button - Fixed to bottom with safe area and keyboard handling */}
-      <div className="fixed bottom-4 left-4 right-4 z-50 pb-safe">
-        <Button 
-          onClick={handleContinue}
-          disabled={!selectedLanguage}
-          className="w-full h-12 text-base font-medium bg-gradient-primary hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
-        >
-          Continue with {selectedLanguage || 'Selected Language'}
-        </Button>
-      </div>
+      {selectedLanguage && (
+        <div className="fixed bottom-4 left-4 right-4 z-50 pb-safe">
+          <Button 
+            onClick={handleContinue}
+            className="w-full h-12 text-base font-medium bg-gradient-primary hover:shadow-lg transition-all duration-200 shadow-lg"
+          >
+            Continue with {selectedLanguage}
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

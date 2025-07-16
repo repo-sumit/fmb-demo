@@ -611,12 +611,9 @@ const SurveyForm: React.FC = () => {
             <ArrowLeft size={20} />
           </Button>
           <div className="text-center">
-            <p className="caption text-muted-foreground">
-              Question {currentQuestion + 1} of {totalQuestions}
-            </p>
-            <h1 className="font-semibold">{survey.name}</h1>
+            <h1 className="text-xl font-semibold">{survey.name}</h1>
             {selectedLanguage && (
-              <p className="text-xs text-muted-foreground mt-1">
+              <p className="text-sm text-muted-foreground mt-1">
                 Language: {selectedLanguage}
               </p>
             )}
@@ -629,11 +626,19 @@ const SurveyForm: React.FC = () => {
             <X size={20} />
           </Button>
         </div>
-        <div className="h-1 bg-muted">
-          <div
-            className="h-full bg-primary transition-all duration-300"
-            style={{ width: `${progress}%` }}
-          />
+        
+        {/* Progress Section */}
+        <div className="px-4 pb-4 space-y-2">
+          <div className="flex justify-between items-center text-sm text-muted-foreground">
+            <span>Question {currentQuestion + 1} of {totalQuestions}</span>
+            <span>{Math.round(progress)}% Complete</span>
+          </div>
+          <div className="w-full bg-secondary rounded-full h-2">
+            <div 
+              className="bg-primary h-2 rounded-full transition-all duration-300 ease-out"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
         </div>
       </div>
 
