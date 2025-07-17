@@ -28,8 +28,10 @@ const Header: React.FC = () => {
     <header className="sticky top-0 z-40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
       <NetworkToggle />
       <div className="flex items-center justify-between px-4 py-3">
-        <div className="flex-1"></div>
-        
+        <div className="flex-1 flex justify-start">
+          <NetworkToggle />
+        </div>
+
         <h1 className="text-2xl font-semibold text-center">{getPageTitle()}</h1>
         <div className="flex-1 flex justify-end">
           <ProfileButton />
