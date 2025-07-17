@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import NetworkToggle from '@/components/NetworkToggle';
 import SurveyCard, { Survey } from '@/components/SurveyCard';
 import FilterSheet from '@/components/FilterSheet';
 import OfflineBanner from '@/components/OfflineBanner';
@@ -178,12 +177,6 @@ const MySurvey: React.FC = () => {
     <div className="pb-20 pt-4 px-4 min-h-screen bg-background">
       {/* Offline Banner */}
       {!isOnline && <OfflineBanner />}
-      
-      {/* Header with Network Toggle */}
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-foreground">My Surveys</h1>
-        <NetworkToggle />
-      </div>
 
       {/* Search and Filter */}
       <div className="flex gap-3 mb-6">
