@@ -2,6 +2,9 @@
 
 [Live Prototype](https://fmb-demo.lovable.app/)  
 [Figma design](https://www.figma.com/design/VoNQ5U0erDfiTZzi5xgvto/FMB-mini-App?node-id=0-1&t=QF2AohzSSJnLkTUi-1)
+
+---
+
 _User: `demo` | School UDISE: `12345678901`_
 
 ---
