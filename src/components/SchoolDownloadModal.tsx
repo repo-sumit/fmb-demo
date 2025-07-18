@@ -50,28 +50,63 @@ const SchoolDownloadModal: React.FC<SchoolDownloadModalProps> = ({
       block: 'Ahmedabad East'
     },
     {
-      udise: '23456789012',
+      udise: '22446688001',
       name: 'Sarva Shiksha Abhiyan School',
       address: 'Ring Road, Surat',
       district: 'Surat',
       block: 'Surat North'
     },
     {
-      udise: '34567890123',
+      udise: '22446688002',
       name: 'Municipal Corporation School',
       address: 'Main Street, Vadodara',
       district: 'Vadodara',
       block: 'Vadodara West'
     },
     {
-      udise: '45678901234',
+      udise: '22446688003',
       name: 'Kasturba Gandhi Balika Vidyalaya',
       address: 'Gandhi Nagar, Rajkot',
       district: 'Rajkot',
       block: 'Rajkot Rural'
     },
     {
-      udise: '56789012345',
+      udise: '22446688004',
+      name: 'Government Higher Secondary School',
+      address: 'Station Road, Bhavnagar',
+      district: 'Bhavnagar',
+      block: 'Bhavnagar City'
+    },
+    {
+      udise: '22446688005',
+      name: 'Government Higher Secondary School',
+      address: 'Station Road, Bhavnagar',
+      district: 'Bhavnagar',
+      block: 'Bhavnagar City'
+    },
+    {
+      udise: '22446688006',
+      name: 'Government Higher Secondary School',
+      address: 'Station Road, Bhavnagar',
+      district: 'Bhavnagar',
+      block: 'Bhavnagar City'
+    },
+    {
+      udise: '22446688007',
+      name: 'Government Higher Secondary School',
+      address: 'Station Road, Bhavnagar',
+      district: 'Bhavnagar',
+      block: 'Bhavnagar City'
+    },
+    {
+      udise: '22446688008',
+      name: 'Government Higher Secondary School',
+      address: 'Station Road, Bhavnagar',
+      district: 'Bhavnagar',
+      block: 'Bhavnagar City'
+    },
+    {
+      udise: '22446688009',
       name: 'Government Higher Secondary School',
       address: 'Station Road, Bhavnagar',
       district: 'Bhavnagar',
