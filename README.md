@@ -14,7 +14,7 @@
 
 ---
 
-_User: `demo` | School UDISE: `12345678901`, `22446688001`, `22446688002`, 22446688003`, `22446688004`, `22446688005`,  `22446688006`, `22446688007`, `22446688008`, `22446688009`_
+_User: `demo` | School UDISE: `12345678901`, `22446688001`, `22446688002`, `22446688003`, `22446688004`, `22446688005`,  `22446688006`, `22446688007`, `22446688008`, `22446688009`_
 
 ## 🎯 Overview
 
@@ -32,7 +32,7 @@ Built on the 🧠 **SwiftChat** Mini App platform, it combines real-time syncing
 - Offline support with manual download per survey
 - Start survey directly, even without network (if downloaded)
 
-### 🏫 Offline School UDISE Selection (NEW 🚀)
+### 🏫 Offline School UDISE Selection
 > Seamless school validation in offline mode
 - When downloading an **In-School** survey, users can search and **cache schools** they plan to visit offline
 - Locally saved school metadata enables:
@@ -51,7 +51,7 @@ Built on the 🧠 **SwiftChat** Mini App platform, it combines real-time syncing
 - Manual sync when back online
 - Conflict handling (last-write-wins or user decides)
 
-### 🧾 Download Survey Response as PDF (NEW 🧨)
+### 🧾 Download Survey Response as PDF 
 - After saving a response, users can download a **PDF**
 - Works in both offline and online modes
 - Shows survey metadata, UDISE, and filled answers
@@ -119,50 +119,14 @@ Users are prompted to re-add expected schools if cache is empty during offline u
 
 ---
 
-## 🖼️ Screenshots (Preview)
 
-> Add these to the GitHub repo:
-
-- `screenshots/survey_download_with_school_add.png`
-- `screenshots/start_survey_offline_validation.png`
-- `screenshots/response_saved_confirmation.png`
-- `screenshots/download_response_pdf_button.png`
-
----
-
-## 👥 Contributors
-
-| Name             | Role            |
-|------------------|-----------------|
-| Aditya Chaudhari | Product Manager |
-| Sumit Kumar      | PM/Design Lead  |
-| Engineering Team | To be Assigned  |
-| Rishabh / Prateek| Inform/Review   |
-
----
-
-## 🚧 Upcoming Enhancements
-
-- ✅ Automatic school suggestion based on visit history
-- 🔁 Background sync trigger (optional)
-- 📲 Native push notification for stale cache
-- 🧠 AI hints for data anomalies in survey response
-
----
-
-## 📄 License
-
-MIT License © [Your Organization]
-
----
-
-> _Built with ❤️ by the SwiftChat + FMB Team — ensuring quality data reaches the system, no matter how far the school is!_
+> _Built with ❤️ by the Sumit_
 
 
 
 ## 🛠️ Developer Quickstart
 
-1. **Clone & Install**  
+1. **Clone & Download**  
    ```sh
    git clone https://github.com/<your-username>/fmb-mini-app-offline.git
    cd fmb-mini-app-offline
@@ -174,10 +138,6 @@ MIT License © [Your Organization]
    ```sh
    npm run dev
    ```
-3. **Deploy on Loveable**
 
-   * Push to main branch, link repo to your [Loveable](https://lovable.app) dashboard, and publish!
-
----
 
 > For feedback, suggestions, or access, drop a line at [inbox.sumitt@gmail.com](mailto:inbox.sumitt@gmail.com)
