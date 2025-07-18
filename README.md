@@ -1,115 +1,164 @@
-# 🌟 FMB Mini-App (Offline) – Prototype
+# 📱 FMB Mini App (Offline) — School Monitoring Reimagined 🚀
+
+> Empowering school inspectors to collect accurate, real-time data — even from the remotest corners of the country 🌄
+
+![SwiftChat](https://img.shields.io/badge/Built_on-SwiftChat-00bfff?style=flat-square)
+![Offline Support](https://img.shields.io/badge/Offline--First-Enabled-green?style=flat-square)
+![License](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)
+![Version](https://img.shields.io/badge/version-1.0.0-orange?style=flat-square)
+
+---
 
 [Live Prototype](https://fmb-demo.lovable.app/)  
 [Figma design](https://www.figma.com/design/VoNQ5U0erDfiTZzi5xgvto/FMB-mini-App?node-id=0-1&t=QF2AohzSSJnLkTUi-1)
 
 ---
 
-_User: `demo` | School UDISE: `12345678901`_
+_User: `demo` | School UDISE: `12345678901`, `22446688001`, `22446688002`, 22446688003`, `22446688004`, `22446688005`,  `22446688006`, `22446688007`, `22446688008`, `22446688009`_
+
+## 🎯 Overview
+
+The **FMB Mini App** is a mobile-first, offline-capable survey tool designed for field inspectors (CRC/BRC) to conduct **In-School** and **Open** surveys with ease, even in areas with poor or no network.
+
+Built on the 🧠 **SwiftChat** Mini App platform, it combines real-time syncing, registry-based validation, and modern UX to streamline education monitoring workflows.
 
 ---
 
-## 🧭 Overview
+## 🧭 Key Features
 
-FMB is a next-gen, lightweight **mini-app for Swiftchat**, empowering field users to **download, complete, and submit surveys** — even in low or no-connectivity scenarios.  
-Admin and field roles are clearly separated, with offline capabilities, encrypted local data, and seamless UX.
+### 🗂️ My Surveys
+- View, filter, and search surveys (Open/In-School)
+- Supports **Public** and **Private** surveys
+- Offline support with manual download per survey
+- Start survey directly, even without network (if downloaded)
 
----
+### 🏫 Offline School UDISE Selection (NEW 🚀)
+> Seamless school validation in offline mode
+- When downloading an **In-School** survey, users can search and **cache schools** they plan to visit offline
+- Locally saved school metadata enables:
+  - Auto-validation offline
+  - Smooth start of surveys in offline mode
+- School cache auto-clears **weekly** in background
 
-## 👥 Users & Access
+### 📋 Start Survey
+- UDISE entry required for In-School surveys
+- Online: Validated with registry 🟢
+- Offline: Validated via format or cached record 🟡
+- Supports single or multiple responses based on survey config
 
-- **User:**  
-  - Login with User ID   
-  - See only their assigned surveys  
-  - Download for offline, submit, view their history
+### 💾 Save & Sync Responses
+- Offline survey entries are stored securely
+- Manual sync when back online
+- Conflict handling (last-write-wins or user decides)
 
----
+### 🧾 Download Survey Response as PDF (NEW 🧨)
+- After saving a response, users can download a **PDF**
+- Works in both offline and online modes
+- Shows survey metadata, UDISE, and filled answers
 
-## 🚀 Core Features
+### 🔍 My Responses
+- View all completed surveys (Synced / Pending)
+- Filter by type, access, or date
+- Sync pending responses manually
 
-### 1. Authentication  
-- Secure login using User ID  
+### ➕ Add Survey
+- Add **Private Surveys** by ID (online only)
+- Preview before adding
 
-### 2. **My Surveys**  
-- **Landing:** Paginated, filtered list of surveys  
-- **Filters:**  
-  - Type: Open / In School  
-  - Access: Public / Private  
-  - Status: Not Started / In Progress / Completed  
-- **Card UI:** Shows survey ID, name, desc, languages, type, access  
-- **Actions:**  
-  - Download for Offline  
-  - Start Survey (with UDISE check for "In School" surveys)
-
-### 3. **My Response**  
-- See all submitted responses  
-- Filter/search by survey, date, status  
-- Sync status for each response  
-- Download (online-only)
-
-### 4. **Add Survey**  
-- Add private surveys by ID (online only)  
-- Instantly appears in My Surveys
-
-### 5. **Profile**  
-- Top-right: user ID, name, role, logout
-
-### 6. **Offline-First Magic**  
-- **Download for Offline:** Store surveys locally  
-- **Offline Mode:**  
-  - Access only downloaded content  
-  - No new survey addition  
-  - See only latest (pending) responses  
-- **Sync:** One-tap manual sync for responses, with status feedback
+### 👤 Profile
+- Displays User ID, Name, Designation
+- Secure Logout option
 
 ---
 
-## 🔗 Edge Cases & User Guidance
+## 💡 Offline Mode: What Works and What Doesn’t
 
-- Empty lists: Friendly “No surveys available” or “No matches” messages  
-- Download failure: Clear error & retry  
-- Validation failure (school, UDISE): Up to 3 tries, then “Contact Admin”  
-- Storage full: Warning and block further actions  
-- Sync failure: Retry per survey  
-- Offline start w/o download: Prompt to download first
-
----
-
-## 🏗️ Technical Stack
-
-- **Frontend:** Modern, modular mini-app, built for the Swiftchat ecosystem  
-- **Offline Layer:** Encrypted local DB (surveys, responses)  
-- **Sync:** Manual "Sync" button with last-write-wins conflict resolution  
-- **Progressive UI:**  
-  - Spinners, banners for online/offline status  
-  - Toasts, modals for feedback  
-- **Export:** Download response as PDF (online only)
-
-**Hosted on:**  
-[Loveable](https://lovable.app) – All-in-one prototyping & hosting for rapid, secure deployments.
+| Feature                    | Online ✅ | Offline 🚫 |
+|---------------------------|----------|------------|
+| View downloaded surveys   | ✅       | ✅         |
+| Start survey              | ✅       | ✅ (if downloaded) |
+| Validate UDISE            | ✅ (registry) | ✅ (cached/format only) |
+| Add new survey            | ✅       | ❌         |
+| Download PDF              | ✅       | ✅ (local copy) |
+| Sync responses            | ✅       | ❌         |
 
 ---
 
-## ✨ Screens / Wireframes
+## ⚙️ Tech Stack
 
-> *Coming soon! Check the [Live Demo](https://fmb-demo.lovable.app/) for hands-on flow.*
+| Layer              | Technology                        |
+|--------------------|------------------------------------|
+| 💬 Platform         | [SwiftChat Mini App](https://swiftchat.ai) |
+| ⚙️ Frontend Shell   | HTML, CSS, SwiftChat Components    |
+| 🧠 Form Engine      | Embedded WebView (existing FMB form UI) |
+| 📦 Local Storage    | Encrypted local storage (IndexedDB / SQLite) |
+| 📡 Networking       | Fetch/XHR with offline fallback & sync queue |
+| 🛠️ PDF Generation   | jsPDF or Native Export (platform dependent) |
+| 🔐 Auth             | Tokenless UID validation `/auth/validate` |
+| ☁️ Backend          | SwiftChat backend + Survey Registry API |
+
+---
+
+## 🔄 Weekly Cache Maintenance
+
+Every 7 days, cached UDISE school data is:
+- 🧹 Auto-cleared in background (silent)
+- ⏱ Triggered on app launch when online
+
+Users are prompted to re-add expected schools if cache is empty during offline use.
 
 ---
 
-## 📜 Product Requirement Doc (PRD) – Quick Glance
+## 🧪 Edge Case Handling
 
-| **Module**     | **Online** | **Offline** |
-|----------------|------------|-------------|
-| My Surveys     | All features | Only downloaded surveys |
-| Profile        | View & logout | View & logout |
-| Filters        | All filters | All filters |
-| Start Survey   | UDISE validation | UDISE validate on sync |
-| My Response    | All, download response | Latest only, sync pending |
-| Add Survey     | Search + add | Disabled |
-
-**See full PRD below for detailed specs and user flows.**
+- ❗ **UDISE not found offline**: Prompt user to reconnect or use a saved UDISE
+- 🔐 **Multiple device conflict**: Server prompts to “Resume” or “Start New”
+- ⚠️ **Sync race conditions**: Conflict modal with options to overwrite or discard
+- 🧨 **Version mismatch**: Auto-migrate or force new download
+- 📉 **Storage full**: Prevent save/download with clear user alerts
 
 ---
+
+## 🖼️ Screenshots (Preview)
+
+> Add these to the GitHub repo:
+
+- `screenshots/survey_download_with_school_add.png`
+- `screenshots/start_survey_offline_validation.png`
+- `screenshots/response_saved_confirmation.png`
+- `screenshots/download_response_pdf_button.png`
+
+---
+
+## 👥 Contributors
+
+| Name             | Role            |
+|------------------|-----------------|
+| Aditya Chaudhari | Product Manager |
+| Sumit Kumar      | PM/Design Lead  |
+| Engineering Team | To be Assigned  |
+| Rishabh / Prateek| Inform/Review   |
+
+---
+
+## 🚧 Upcoming Enhancements
+
+- ✅ Automatic school suggestion based on visit history
+- 🔁 Background sync trigger (optional)
+- 📲 Native push notification for stale cache
+- 🧠 AI hints for data anomalies in survey response
+
+---
+
+## 📄 License
+
+MIT License © [Your Organization]
+
+---
+
+> _Built with ❤️ by the SwiftChat + FMB Team — ensuring quality data reaches the system, no matter how far the school is!_
+
+
 
 ## 🛠️ Developer Quickstart
 
@@ -128,70 +177,6 @@ Admin and field roles are clearly separated, with offline capabilities, encrypte
 3. **Deploy on Loveable**
 
    * Push to main branch, link repo to your [Loveable](https://lovable.app) dashboard, and publish!
-
----
-
-## 📖 Detailed PRD & User Flows
-
-<details>
-<summary>Click to expand – full PRD inline 👇</summary>
-
-### 1. Login & Authentication
-
-* User enters ID
-* Authenticated session scoped to their hierarchy
-
-### 2. Survey List & Download
-
-* User sees only allowed surveys
-* Filters for quick access (type, access, status)
-* **Download for Offline:** Spinner → Downloaded state
-
-### 3. Survey Taking
-
-* In School: UDISE entry required, verified live or at sync
-* Offline mode: Must pre-download
-
-### 4. My Response
-
-* All responses listed (filtered, paginated)
-* Sync status visible per response (Synced / Pending)
-* Downloadable as PDF (online only)
-
-### 5. Add Survey
-
-* Only online
-* Disabled offline with modal prompt
-
-### 6. Profile
-
-* View user info, logout
-
-### 7. Offline/Online UI
-
-* Persistent banner
-* Disabled actions as appropriate
-
-### 8. Edge Cases
-
-* Empty, error, storage, network, validation flows with user guidance
-
-</details>
-
----
-
-## 💡 Roadmap / Suggestions
-
-* [ ] Deep-linking for survey sharing
-* [ ] Push notification for sync reminders
-* [ ] Multi-language support expansion
-
----
-
-## 👩‍💻 Contributors
-
-* **Product, Design, Dev:** [Sumit](https://www.linkedin.com/in/in-sumit) 
-* **Prototype Hosting:** [Loveable](https://lovable.app)
 
 ---
 
