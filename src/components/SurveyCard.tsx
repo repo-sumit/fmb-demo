@@ -73,6 +73,13 @@ const SurveyCard: React.FC<SurveyCardProps> = ({
   const handleDownload = () => {
     if (!onDownload || isDownloaded) return;
     
+    // For In-School surveys, trigger the school download modal
+    if (survey.type === 'In School') {
+      onDownload(survey.id);
+      return;
+    }
+    
+    // For Open surveys, proceed with regular download
     setIsDownloading(true);
     setDownloadProgress(0);
     

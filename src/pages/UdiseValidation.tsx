@@ -5,15 +5,27 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { ArrowLeft, School, CheckCircle } from 'lucide-react';
+import { ArrowLeft, School, CheckCircle, AlertTriangle } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import { useNetwork } from '@/contexts/NetworkContext';
+import { schoolCacheUtils } from '@/utils/schoolCache';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 
 const UdiseValidation: React.FC = () => {
   const navigate = useNavigate();
   const { surveyId } = useParams();
+  const { isOnline } = useNetwork();
   const [udiseCode, setUdiseCode] = useState('');
   const [isValidated, setIsValidated] = useState(false);
   const [schoolInfo, setSchoolInfo] = useState<any>(null);
+  const [showOfflineDialog, setShowOfflineDialog] = useState(false);
 
   // Mock school data for validation
   const mockSchoolData = {
@@ -48,8 +60,43 @@ const UdiseValidation: React.FC = () => {
       return;
     }
 
-    // Check if code exists in mock data
-    const schoolData = mockSchoolData[udiseCode as keyof typeof mockSchoolData];
+    // If offline, check local cache first
+    if (!isOnline) {
+      const cachedSchool = schoolCacheUtils.findCachedSchool(udiseCode);
+      if (cachedSchool) {
+        setSchoolInfo({
+          name: cachedSchool.name,
+          udise: cachedSchool.udise,
+          district: cachedSchool.district || 'Unknown',
+          state: 'Gujarat' // Default state
+        });
+        setIsValidated(true);
+        toast({
+          title: "School Found (Cached)",
+          description: "School information loaded from offline cache",
+        });
+        return;
+      } else {
+        setShowOfflineDialog(true);
+        return;
+      }
+    }
+
+    // Online validation - check mock data first, then cached data as fallback
+    let schoolData = mockSchoolData[udiseCode as keyof typeof mockSchoolData];
+    
+    if (!schoolData) {
+      const cachedSchool = schoolCacheUtils.findCachedSchool(udiseCode);
+      if (cachedSchool) {
+        schoolData = {
+          name: cachedSchool.name,
+          udise: cachedSchool.udise,
+          district: cachedSchool.district || 'Unknown',
+          state: 'Gujarat'
+        };
+      }
+    }
+    
     if (schoolData) {
       setSchoolInfo(schoolData);
       setIsValidated(true);
@@ -173,6 +220,34 @@ const UdiseValidation: React.FC = () => {
           <p>Contact your school administration or district education office.</p>
         </div>
       </div>
+
+      {/* Offline Dialog */}
+      <Dialog open={showOfflineDialog} onOpenChange={setShowOfflineDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <AlertTriangle size={20} className="text-amber-600" />
+              School Not Found
+            </DialogTitle>
+            <DialogDescription>
+              The entered UDISE code was not found in your offline cache. 
+              Please connect to the network to validate or select another UDISE code.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex-col gap-2">
+            <Button onClick={() => setShowOfflineDialog(false)} className="w-full">
+              Enter Different UDISE
+            </Button>
+            <Button 
+              variant="outline" 
+              onClick={() => navigate(-1)}
+              className="w-full"
+            >
+              Go Back
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

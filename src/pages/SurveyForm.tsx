@@ -22,6 +22,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import SurveyConfirmationModal from '@/components/SurveyConfirmationModal';
+import { generateResponsePDF } from '@/utils/pdfGenerator';
+import { useNetwork } from '@/contexts/NetworkContext';
 
 interface Question {
   id: string;
@@ -38,11 +41,14 @@ interface Question {
 const SurveyForm: React.FC = () => {
   const { surveyId } = useParams();
   const navigate = useNavigate();
+  const { isOnline } = useNetwork();
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [responses, setResponses] = useState<Record<string, any>>({});
   const [showDiscardDialog, setShowDiscardDialog] = useState(false);
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [udiseCode, setUdiseCode] = useState('');
   const [selectedLanguage, setSelectedLanguage] = useState<string>('');
+  const [schoolInfo, setSchoolInfo] = useState<any>(null);
 
   // Comprehensive demo survey with all question types
   const survey = {
@@ -152,11 +158,18 @@ const SurveyForm: React.FC = () => {
   const totalQuestions = survey.questions.length;
   const progress = ((currentQuestion + 1) / totalQuestions) * 100;
 
-  // Load selected language on component mount
+  // Load selected language and school info on component mount
   useEffect(() => {
     const language = localStorage.getItem(`survey_${surveyId}_language`);
     if (language) {
       setSelectedLanguage(language);
+    }
+    
+    const school = localStorage.getItem(`school_${surveyId}`);
+    if (school) {
+      const schoolData = JSON.parse(school);
+      setSchoolInfo(schoolData);
+      setUdiseCode(schoolData.udise);
     }
   }, [surveyId]);
 
@@ -222,20 +235,46 @@ const SurveyForm: React.FC = () => {
     // Save to localStorage for local view response functionality
     const surveyResponse = {
       surveyId,
+      surveyName: survey.name,
       udiseCode,
+      schoolName: schoolInfo?.name,
       responses,
       completedAt: new Date().toISOString(),
-      status: 'pending' // Will be synced when online
+      status: isOnline ? 'synced' : 'pending',
+      submittedBy: 'Field Officer' // This could come from user context
     };
 
-    localStorage.setItem(`response_${surveyId}`, JSON.stringify(surveyResponse));
+    const responseKey = `response_${surveyId}_${Date.now()}`;
+    localStorage.setItem(responseKey, JSON.stringify(surveyResponse));
     
-    toast({
-      title: "Survey Submitted",
-      description: "Your responses have been saved and will sync when online.",
-    });
+    // Clear the draft
+    localStorage.removeItem(`survey_${surveyId}`);
+    
+    setShowConfirmationModal(true);
+  };
 
-    navigate('/');
+  const handleDownloadPDF = async () => {
+    const surveyResponse = {
+      surveyId: surveyId || '',
+      surveyName: survey.name,
+      udiseCode,
+      schoolName: schoolInfo?.name,
+      responses,
+      completedAt: new Date().toISOString(),
+      submittedBy: 'Field Officer'
+    };
+
+    await generateResponsePDF(surveyResponse);
+  };
+
+  const handleFillAnother = () => {
+    setShowConfirmationModal(false);
+    // Reset form and redirect to UDISE validation for In-School surveys
+    if (survey && survey.questions.some(q => q.type === 'text' && q.question.includes('school'))) {
+      navigate(`/udise-validation/${surveyId}`);
+    } else {
+      navigate(`/survey-language/${surveyId}`);
+    }
   };
 
   const handleDiscard = () => {
@@ -703,6 +742,17 @@ const SurveyForm: React.FC = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Survey Confirmation Modal */}
+      <SurveyConfirmationModal
+        isOpen={showConfirmationModal}
+        onClose={() => setShowConfirmationModal(false)}
+        onFillAnother={handleFillAnother}
+        onMySurveys={() => navigate('/')}
+        onDownloadPDF={handleDownloadPDF}
+        surveyName={survey.name}
+        isOffline={!isOnline}
+      />
     </div>
   );
 };

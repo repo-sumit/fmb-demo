@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SurveyCard, { Survey } from '@/components/SurveyCard';
 import FilterSheet from '@/components/FilterSheet';
 import OfflineBanner from '@/components/OfflineBanner';
+import SchoolDownloadModal from '@/components/SchoolDownloadModal';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Filter, Search } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { useNetwork } from '@/contexts/NetworkContext';
+import { schoolCacheUtils } from '@/utils/schoolCache';
 
 const MySurvey: React.FC = () => {
   const navigate = useNavigate();
@@ -17,6 +19,15 @@ const MySurvey: React.FC = () => {
     types: [] as string[],
     access: [] as string[],
     status: [] as string[]
+  });
+  const [schoolDownloadModal, setSchoolDownloadModal] = useState<{
+    isOpen: boolean;
+    surveyId: string;
+    surveyName: string;
+  }>({
+    isOpen: false,
+    surveyId: '',
+    surveyName: ''
   });
 
   // Enhanced education-focused mock data with 10+ school surveys
@@ -157,7 +168,17 @@ const MySurvey: React.FC = () => {
     const survey = surveys.find(s => s.id === surveyId);
     if (!survey) return;
 
-    // Simulate download with progress
+    // For In-School surveys, show school download modal
+    if (survey.type === 'In School') {
+      setSchoolDownloadModal({
+        isOpen: true,
+        surveyId,
+        surveyName: survey.name
+      });
+      return;
+    }
+
+    // For Open surveys, proceed with regular download
     toast({
       title: "Download Started",
       description: `Preparing ${survey.name} for offline use...`,
@@ -172,6 +193,39 @@ const MySurvey: React.FC = () => {
       });
     }, 2000);
   };
+
+  const handleSchoolDownloadComplete = (schools: any[]) => {
+    const surveyId = schoolDownloadModal.surveyId;
+    const survey = surveys.find(s => s.id === surveyId);
+    if (!survey) return;
+
+    toast({
+      title: "Download Started",
+      description: `Preparing ${survey.name} with ${schools.length} schools for offline use...`,
+    });
+
+    // Simulate download completion
+    setTimeout(() => {
+      addDownloadedSurvey(surveyId);
+      toast({
+        title: "Download Complete",
+        description: `${survey.name} is ready for offline use with ${schools.length} schools`,
+      });
+    }, 2000);
+  };
+
+  // Cleanup expired cache on component mount when online
+  useEffect(() => {
+    if (isOnline) {
+      const wasCleanedUp = schoolCacheUtils.cleanupExpiredCache();
+      if (wasCleanedUp) {
+        toast({
+          title: "Cache Refreshed",
+          description: "Offline school cache has been updated. Please re-add schools if needed.",
+        });
+      }
+    }
+  }, [isOnline]);
 
   return (
     <div className="pb-20 pt-4 px-4 min-h-screen bg-background">
@@ -236,6 +290,14 @@ const MySurvey: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* School Download Modal */}
+      <SchoolDownloadModal
+        isOpen={schoolDownloadModal.isOpen}
+        onClose={() => setSchoolDownloadModal(prev => ({ ...prev, isOpen: false }))}
+        onFinishAndDownload={handleSchoolDownloadComplete}
+        surveyName={schoolDownloadModal.surveyName}
+      />
     </div>
   );
 };
