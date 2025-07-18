@@ -46,6 +46,60 @@ const UdiseValidation: React.FC = () => {
       udise: '34567890123',
       district: 'Vadodara',
       state: 'Gujarat'
+    },
+    '22446688001': {
+      name: 'Government High School, Rajkot',
+      udise: '22446688001',
+      district: 'Rajkot',
+      state: 'Gujarat'
+    },
+    '22446688002': {
+      name: 'Primary School, Bhavnagar',
+      udise: '22446688002',
+      district: 'Bhavnagar',
+      state: 'Gujarat'
+    },
+    '22446688003': {
+      name: 'Municipal School, Jamnagar',
+      udise: '22446688003',
+      district: 'Jamnagar',
+      state: 'Gujarat'
+    },
+    '22446688004': {
+      name: 'Kasturba Gandhi Balika Vidyalaya',
+      udise: '22446688004',
+      district: 'Gandhinagar',
+      state: 'Gujarat'
+    },
+    '22446688005': {
+      name: 'Government Upper Primary School',
+      udise: '22446688005',
+      district: 'Mehsana',
+      state: 'Gujarat'
+    },
+    '22446688006': {
+      name: 'Tribal Development School',
+      udise: '22446688006',
+      district: 'Dahod',
+      state: 'Gujarat'
+    },
+    '22446688007': {
+      name: 'Zilla Panchayat Primary School',
+      udise: '22446688007',
+      district: 'Patan',
+      state: 'Gujarat'
+    },
+    '22446688008': {
+      name: 'Government Secondary School',
+      udise: '22446688008',
+      district: 'Banaskantha',
+      state: 'Gujarat'
+    },
+    '22446688009': {
+      name: 'Model School, Kutch',
+      udise: '22446688009',
+      district: 'Kutch',
+      state: 'Gujarat'
     }
   };
 
