@@ -1,4 +1,4 @@
-# 📱 FMB Mini App (Offline) — School Monitoring Reimagined 🚀
+# FMB Mini App (Offline) — School Monitoring Reimagined 🚀
 
 > Empowering school inspectors to collect accurate, real-time data — even from the remotest corners of the country 🌄
 
