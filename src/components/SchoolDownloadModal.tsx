@@ -198,8 +198,8 @@ const SchoolDownloadModal: React.FC<SchoolDownloadModalProps> = ({
             Add Schools for Offline Use
           </DialogTitle>
           <DialogDescription>
-            You need to add schools you plan to visit offline for "{surveyName}". 
-            Please search and add expected school UDISEs.
+            To conduct this survey offline at a later stage for specific schools, please add their school codes below. 
+            You may add up to 20 schools.
           </DialogDescription>
         </DialogHeader>
 
