@@ -11,7 +11,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Search, School, Plus, X } from 'lucide-react';
+import { Progress } from '@/components/ui/progress';
+import { Search, School, Plus, X, Download } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
 interface School {
@@ -39,6 +40,8 @@ const SchoolDownloadModal: React.FC<SchoolDownloadModalProps> = ({
   const [searchResults, setSearchResults] = useState<School[]>([]);
   const [selectedSchools, setSelectedSchools] = useState<School[]>([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [downloadProgress, setDownloadProgress] = useState(0);
 
   // Mock school database for search
   const mockSchoolDatabase: School[] = [
@@ -176,65 +179,116 @@ const SchoolDownloadModal: React.FC<SchoolDownloadModalProps> = ({
       return;
     }
 
-    // Store schools in localStorage with timestamp
-    const schoolData = {
-      schools: selectedSchools,
-      timestamp: Date.now(),
-      expiresAt: Date.now() + (7 * 24 * 60 * 60 * 1000) // 7 days
-    };
-    
-    localStorage.setItem('cached_schools', JSON.stringify(schoolData));
-    
-    onFinishAndDownload(selectedSchools);
-    onClose();
+    setIsDownloading(true);
+    setDownloadProgress(0);
+
+    // Simulate download process with progress
+    const downloadSteps = [
+      { progress: 20, message: "Preparing survey data..." },
+      { progress: 40, message: "Caching school information..." },
+      { progress: 60, message: "Downloading survey forms..." },
+      { progress: 80, message: "Optimizing for offline use..." },
+      { progress: 100, message: "Download complete!" }
+    ];
+
+    let currentStep = 0;
+
+    const progressInterval = setInterval(() => {
+      if (currentStep < downloadSteps.length) {
+        const step = downloadSteps[currentStep];
+        setDownloadProgress(step.progress);
+        
+        toast({
+          title: step.message,
+          description: `${step.progress}% complete`,
+        });
+
+        if (step.progress === 100) {
+          clearInterval(progressInterval);
+          
+          // Store schools in localStorage with timestamp
+          const schoolData = {
+            schools: selectedSchools,
+            timestamp: Date.now(),
+            expiresAt: Date.now() + (7 * 24 * 60 * 60 * 1000) // 7 days
+          };
+          
+          localStorage.setItem('cached_schools', JSON.stringify(schoolData));
+          
+          setTimeout(() => {
+            setIsDownloading(false);
+            onFinishAndDownload(selectedSchools);
+            onClose();
+          }, 1000);
+        }
+        currentStep++;
+      }
+    }, 1000);
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[80vh] overflow-hidden flex flex-col">
+      <DialogContent className="max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
+          <DialogTitle className="flex items-center gap-2 text-lg sm:text-xl">
             <School size={20} className="text-primary" />
             Add Schools for Offline Use
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-sm sm:text-base">
             To conduct this survey offline at a later stage for specific schools, please add their school codes below. 
             You may add up to 20 schools.
           </DialogDescription>
         </DialogHeader>
 
+        {/* Download Progress Bar */}
+        {isDownloading && (
+          <div className="space-y-3 p-4 bg-muted/50 rounded-lg">
+            <div className="flex items-center gap-2">
+              <Download size={16} className="text-primary animate-pulse" />
+              <span className="text-sm font-medium">Downloading Survey...</span>
+            </div>
+            <Progress value={downloadProgress} className="w-full" />
+            <p className="text-xs text-muted-foreground">{downloadProgress}% complete</p>
+          </div>
+        )}
+
         <div className="flex-1 space-y-4 overflow-hidden">
           {/* Search Bar */}
-          <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row gap-2">
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={16} />
               <Input
                 placeholder="Search by UDISE code or school name..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
+                className="pl-10 text-sm sm:text-base"
                 onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                disabled={isDownloading}
               />
             </div>
-            <Button onClick={handleSearch} disabled={!searchQuery.trim() || isSearching}>
+            <Button 
+              onClick={handleSearch} 
+              disabled={!searchQuery.trim() || isSearching || isDownloading}
+              className="w-full sm:w-auto"
+            >
               {isSearching ? 'Searching...' : 'Search'}
             </Button>
           </div>
 
           {/* Search Results */}
-          {searchResults.length > 0 && (
+          {searchResults.length > 0 && !isDownloading && (
             <div className="space-y-2">
-              <h4 className="font-medium text-sm">Search Results</h4>
-              <div className="max-h-40 overflow-y-auto space-y-2">
+              <h4 className="font-medium text-sm sm:text-base">Search Results</h4>
+              <div className="max-h-32 sm:max-h-40 overflow-y-auto space-y-2">
                 {searchResults.map((school) => (
                   <Card key={school.udise} className="p-3">
-                    <div className="flex justify-between items-start">
-                      <div className="flex-1">
-                        <h5 className="font-medium text-sm">{school.name}</h5>
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
+                      <div className="flex-1 min-w-0">
+                        <h5 className="font-medium text-sm sm:text-base truncate">{school.name}</h5>
                         {school.address && (
-                          <p className="text-xs text-muted-foreground">{school.address}</p>
+                          <p className="text-xs text-muted-foreground truncate">{school.address}</p>
                         )}
-                        <div className="flex gap-2 mt-1">
+                        <div className="flex flex-wrap gap-1 mt-1">
                           <Badge variant="outline" className="text-xs">
                             UDISE: {school.udise}
                           </Badge>
@@ -245,11 +299,12 @@ const SchoolDownloadModal: React.FC<SchoolDownloadModalProps> = ({
                           )}
                         </div>
                       </div>
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 shrink-0">
                         <Button
                           size="sm"
                           onClick={() => handleAddSchool(school)}
                           disabled={selectedSchools.find(s => s.udise === school.udise) !== undefined}
+                          className="w-full sm:w-auto"
                         >
                           <Plus size={14} className="mr-1" />
                           Add
@@ -263,18 +318,18 @@ const SchoolDownloadModal: React.FC<SchoolDownloadModalProps> = ({
           )}
 
           {/* Selected Schools */}
-          {selectedSchools.length > 0 && (
+          {selectedSchools.length > 0 && !isDownloading && (
             <div className="space-y-2">
-              <h4 className="font-medium text-sm">
+              <h4 className="font-medium text-sm sm:text-base">
                 Selected Schools ({selectedSchools.length})
               </h4>
-              <div className="max-h-40 overflow-y-auto space-y-2">
+              <div className="max-h-32 sm:max-h-40 overflow-y-auto space-y-2">
                 {selectedSchools.map((school) => (
                   <Card key={school.udise} className="p-3 bg-green-50 border-green-200">
-                    <div className="flex justify-between items-start">
-                      <div className="flex-1">
-                        <h5 className="font-medium text-sm">{school.name}</h5>
-                        <div className="flex gap-2 mt-1">
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
+                      <div className="flex-1 min-w-0">
+                        <h5 className="font-medium text-sm sm:text-base truncate">{school.name}</h5>
+                        <div className="flex flex-wrap gap-1 mt-1">
                           <Badge variant="outline" className="text-xs bg-white">
                             UDISE: {school.udise}
                           </Badge>
@@ -289,6 +344,7 @@ const SchoolDownloadModal: React.FC<SchoolDownloadModalProps> = ({
                         size="sm"
                         variant="ghost"
                         onClick={() => handleRemoveSchool(school.udise)}
+                        className="self-end sm:self-start"
                       >
                         <X size={14} />
                       </Button>
@@ -300,15 +356,16 @@ const SchoolDownloadModal: React.FC<SchoolDownloadModalProps> = ({
           )}
         </div>
 
-        <DialogFooter>
-          <Button variant="outline" onClick={onClose}>
+        <DialogFooter className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+          <Button variant="outline" onClick={onClose} className="w-full sm:w-auto" disabled={isDownloading}>
             Cancel
           </Button>
           <Button 
             onClick={handleFinishAndDownload}
-            disabled={selectedSchools.length === 0}
+            disabled={selectedSchools.length === 0 || isDownloading}
+            className="w-full sm:w-auto"
           >
-            Finish & Download Survey
+            {isDownloading ? 'Downloading...' : 'Finish & Download Survey'}
           </Button>
         </DialogFooter>
       </DialogContent>

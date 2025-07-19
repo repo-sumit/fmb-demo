@@ -72,16 +72,16 @@ const ResponseFilterSheet: React.FC<ResponseFilterSheetProps> = ({ filters, onFi
           )}
         </div>
       </SheetTrigger>
-      <SheetContent side="bottom" className="h-[80vh]">
+      <SheetContent side="bottom" className="h-[80vh] sm:h-[70vh] max-w-2xl mx-auto">
         <SheetHeader>
-          <SheetTitle>Filter Responses</SheetTitle>
+          <SheetTitle className="text-lg sm:text-xl">Filter Responses</SheetTitle>
         </SheetHeader>
         
-        <div className="mt-6 space-y-6">
+        <div className="mt-4 sm:mt-6 space-y-4 sm:space-y-6 overflow-y-auto max-h-[calc(80vh-120px)]">
           {filterSections.map((section) => (
             <div key={section.key}>
-              <h4 className="font-medium mb-3">{section.title}</h4>
-              <div className="space-y-2">
+              <h4 className="font-medium mb-2 sm:mb-3 text-sm sm:text-base">{section.title}</h4>
+              <div className="space-y-2 grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {section.options.map((option) => (
                   <div key={option} className="flex items-center space-x-2">
                     <Checkbox
@@ -91,7 +91,7 @@ const ResponseFilterSheet: React.FC<ResponseFilterSheetProps> = ({ filters, onFi
                     />
                     <label
                       htmlFor={`${section.key}-${option}`}
-                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
                     >
                       {option}
                     </label>
@@ -102,11 +102,11 @@ const ResponseFilterSheet: React.FC<ResponseFilterSheetProps> = ({ filters, onFi
           ))}
         </div>
 
-        <div className="flex gap-3 mt-6 pt-6 border-t">
-          <Button variant="outline" onClick={clearFilters} className="flex-1">
+        <div className="flex flex-col sm:flex-row gap-3 mt-4 sm:mt-6 pt-4 sm:pt-6 border-t">
+          <Button variant="outline" onClick={clearFilters} className="flex-1 w-full sm:w-auto">
             Clear All
           </Button>
-          <Button onClick={applyFilters} className="flex-1">
+          <Button onClick={applyFilters} className="flex-1 w-full sm:w-auto">
             Apply Filters
           </Button>
         </div>

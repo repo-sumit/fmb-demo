@@ -10,6 +10,10 @@ interface SurveyResponse {
   submittedBy?: string;
 }
 
+export const generatePDF = async (response: SurveyResponse): Promise<void> => {
+  return generateResponsePDF(response);
+};
+
 export const generateResponsePDF = async (response: SurveyResponse): Promise<void> => {
   try {
     // For now, we'll simulate PDF generation and create a downloadable blob
